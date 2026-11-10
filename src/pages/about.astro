@@ -1,0 +1,94 @@
+---
+import {Image} from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Section from '../components/Section.astro';
+import CtaBand from '../components/CtaBand.astro';
+import {pic} from '../lib/photos';
+
+const crumbs = [
+  {name: 'Home', href: '/'},
+  {name: 'About us', href: '/about/'},
+];
+
+const values = [
+  ['Family first', 'Everything we do is built around families spending time together, from the play areas to the Family Room.'],
+  ['Affordable', 'Fair prices, a weekday special and the freedom to bring your own décor and catering.'],
+  ['Relaxed', 'A slower pace in the countryside, with ducks on the water and sunsets over the lapas.'],
+  ['All in one place', 'Stay, celebrate, eat, fish and play without leaving the property.'],
+];
+---
+
+<Base
+  title="About The Duckpond | A Family Venue Between Ballito & Tongaat"
+  description="The Duckpond is a family venue, guest inn and restaurant around a scenic duck pond on the R102 between Ballito and Tongaat. Where families flock together."
+  crumbs={crumbs}
+>
+  <PageHero
+    eyebrow="About The Duckpond · R102, Greylands"
+    lines={[{t: 'Where'}, {t: 'families flock', i: true}, {t: 'together'}]}
+    intro="A relaxed countryside atmosphere centred around a scenic pond, between Ballito and Tongaat on the KwaZulu-Natal North Coast."
+    images={[pic('white-ducks-on-the-pond')]}
+    crumbs={crumbs}
+  >
+    <a href="/contact/" class="btn btn-primary">Visit us</a>
+  </PageHero>
+
+  <Section eyebrow="Our story" lines={[{t: 'Centred'}, {t: 'around a pond', i: true}]}>
+    <div class="copy text-[18px]" data-reveal>
+      <p>
+        The Duck Pond is nestled along the R102 between Ballito and Tongaat. Centred around a scenic pond, it offers a
+        relaxed countryside atmosphere with cosy accommodation, venue hire, and indoor and outdoor play areas for children.
+      </p>
+      <p>
+        It is a peaceful spot by the water and a place where the North Coast comes to celebrate. On any
+        given weekend you might find a wedding on the lawn, a first birthday in the Kids Lapa, a family braai in the Braai
+        Shed, anglers on the bank and guests watching the sunset from the Inn’s balcony.
+      </p>
+      <p>
+        Through it all, the ducks carry on doing their rounds of the pond. They are the reason for our name and our motto:
+        <em>where families flock together</em>.
+      </p>
+    </div>
+  </Section>
+
+  <Section tone="cream" stacked eyebrow="What we stand for" lines={[{t: 'Simple things,'}, {t: 'done with care', i: true}]}>
+    <ul class="grid gap-x-10 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
+      {
+        values.map(([t, d], i) => (
+          <li class="border-t border-ink/25 pt-5" data-reveal style={`--d:${i * 0.06}s`}>
+            <h3 class="display text-[32px]">{t}</h3>
+            <p class="mt-2 text-ink/80">{d}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </Section>
+
+  <Section eyebrow="On the property" lines={[{t: 'Everything'}, {t: 'by the water', i: true}]}>
+    <div class="copy text-[18px]" data-reveal>
+      <ul>
+        <li><a href="/accommodation/">The Duckpond Inn</a>: single, sharing, family and 6-sleeper rooms</li>
+        <li><a href="/venues/">Eight venues</a> for 15 to 100 guests, including a Wedding &amp; Conference Centre</li>
+        <li><a href="/restaurant/">The Duckpond Restaurant</a>, The Sitting Duck, the Shisa Nyama and Curry Corner</li>
+        <li><a href="/fishing/">Fishing</a> for tilapia, koi and largemouth bass</li>
+        <li><a href="/kids-play/">Indoor and outdoor play areas</a> and a Kids Lapa</li>
+        <li>Braai facilities with every venue</li>
+        <li><a href="/on-site-businesses/">Duckpond Car Wash and KZN Safety and Gear</a></li>
+      </ul>
+    </div>
+    <div class="mt-10 grid grid-cols-2 gap-3" data-reveal>
+      <Image src={pic('housekeeping-team').src} alt={pic('housekeeping-team').alt} widths={[400, 700]} sizes="(min-width: 768px) 28vw, 50vw" loading="lazy" class="aspect-[4/5] w-full object-cover" />
+      <Image src={pic('lapa-deck-fairy-lights').src} alt={pic('lapa-deck-fairy-lights').alt} widths={[400, 700]} sizes="(min-width: 768px) 28vw, 50vw" loading="lazy" class="aspect-[4/5] w-full object-cover mt-12" />
+    </div>
+  </Section>
+
+  <CtaBand
+    lines={[{t: 'Come and'}, {t: 'flock with us.', i: true}]}
+    text="Plan a celebration, book a room or just come for the day. We would love to welcome your family."
+    image={pic('sunset-over-the-duck-pond')}
+  >
+    <a href="/book/" class="btn btn-primary">Book a visit</a>
+    <a href="/gallery/" class="btn btn-ghost">See the gallery</a>
+  </CtaBand>
+</Base>

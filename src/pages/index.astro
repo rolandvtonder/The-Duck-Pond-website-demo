@@ -1,0 +1,236 @@
+---
+import {Image} from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Panels, {type Panel} from '../components/Panels.astro';
+import Section from '../components/Section.astro';
+import Feature from '../components/Feature.astro';
+import Faq from '../components/Faq.astro';
+import CtaBand from '../components/CtaBand.astro';
+import {contacts, fishing, hours, rand, rooms, site, venues, weekdaySpecial} from '../data/site';
+import {pic} from '../lib/photos';
+import {faqSchema, type Faq as FaqItem} from '../lib/schema';
+
+const panels: Panel[] = [
+  {
+    eyebrow: 'The Duckpond Inn',
+    name: ['Stay the', 'night'],
+    image: pic('inn-room-balcony-view'),
+    href: '/accommodation/',
+    specs: [['Rooms from', `${rand(rooms[0].price)} / night`], ['Family room', '4 adults & 2 kids']],
+    tint: '#1f4d3a',
+  },
+  {
+    eyebrow: 'Venues & events',
+    name: ['Celebrate', 'together'],
+    image: pic('wedding-reception-hall'),
+    href: '/venues/',
+    specs: [['Eight venues', '15 to 100 guests'], ['Mon–Thu', '50% off venue hire']],
+    tint: '#c2185b',
+  },
+  {
+    eyebrow: 'Fishing & kids play',
+    name: ['Play by the', 'water'],
+    image: pic('indoor-play-area-wide'),
+    href: '/fishing/',
+    specs: [['Fishing', `${rand(fishing.price)} ${fishing.unit}`], ['Play areas', 'Indoor & outdoor']],
+    tint: '#a9c8a0',
+  },
+];
+
+const explore = [
+  {href: '/accommodation/', title: 'Accommodation', text: 'Rooms at The Duckpond Inn, from singles to six-sleepers.', img: pic('inn-queen-room-en-suite')},
+  {href: '/venues/', title: 'Venues & events', text: 'Weddings, birthdays, baby showers and conferences.', img: pic('garden-wedding-ceremony')},
+  {href: '/restaurant/', title: 'Restaurant & food', text: 'Restaurant, Sitting Duck, Shisa Nyama and Curry Corner.', img: pic('long-table-pond-view')},
+  {href: '/fishing/', title: 'Fishing', text: 'Tilapia, koi and the odd largemouth bass. R40 a rod.', img: pic('ducks-on-the-pond-at-dusk')},
+  {href: '/kids-play/', title: 'Kids play', text: 'Covered indoor play area and outdoor jungle gyms.', img: pic('outdoor-jungle-gym')},
+  {href: '/specials/', title: 'Specials', text: 'Current deals, including 50% off weekday venue hire.', img: pic('lapa-deck-fairy-lights')},
+  {href: '/gallery/', title: 'Gallery', text: 'Weddings, parties, rooms and sunsets on the pond.', img: pic('sunset-pond-reflection')},
+  {href: '/on-site-businesses/', title: 'On-site businesses', text: 'Car wash, KZN Safety and Gear and more.', img: pic('sitting-duck-shisa-nyama-car-wash-sign')},
+];
+
+const faqs: FaqItem[] = [
+  {
+    q: 'Where is The Duckpond?',
+    a: 'The Duckpond is on the R102 (Greylands Road), between Ballito and Tongaat on the KwaZulu-Natal North Coast. It is an easy drive from Ballito, Salt Rock, Tongaat and King Shaka International Airport.',
+  },
+  {
+    q: 'What can I book at The Duckpond?',
+    a: `You can book a room at The Duckpond Inn (from ${rand(rooms[0].price)} per night), hire one of eight venues for 15 to 100 guests (from ${rand(venues[0].price)}), and come for fishing at ${rand(fishing.price)} per rod. Send a booking request online or call ${contacts[0].name} on ${contacts[0].display}.`,
+  },
+  {
+    q: 'Is there a weekday special on venue hire?',
+    a: `Yes. From ${weekdaySpecial.label}, all venues are 50% off ${weekdaySpecial.days.toLowerCase()}. ${weekdaySpecial.terms}`,
+  },
+  {
+    q: 'Is The Duckpond good for children?',
+    a: 'Yes. Families are at the heart of The Duckpond. There is a covered indoor play area, outdoor jungle gyms on the lawn and a Kids Lapa for up to 30 guests that is made for children’s parties.',
+  },
+  {
+    q: 'Can I bring my own décor and catering?',
+    a: 'Yes. Venue hire includes seating to the venue’s capacity and a private braai area, and you are welcome to bring your own décor and catering.',
+  },
+  {
+    q: 'What are your hours?',
+    a: `Venues are open ${hours.map((h) => `${h.days.toLowerCase()} ${h.time.replace(' – ', ' to ')}`).join(', and ')}.`,
+  },
+];
+---
+
+<Base
+  title="The Duckpond Ballito | Venue Hire, Accommodation & Family Fun on the R102"
+  description="Family venue, guest inn and restaurant around a scenic duck pond between Ballito and Tongaat. Weddings, birthdays, conferences, rooms from R675, fishing and kids play."
+  schema={[faqSchema(faqs)]}
+>
+  <PageHero
+    full
+    eyebrow="Venue hire · Accommodation · Restaurant · Ballito, KZN"
+    lines={[{t: 'Where families'}, {t: 'flock together', i: true}, {t: 'by the'}, {t: 'pond.', i: true}]}
+    intro="A relaxed countryside escape on the R102 between Ballito and Tongaat. Stay at The Duckpond Inn, celebrate in one of eight venues, cast a line or let the kids play while you unwind by the water."
+    images={[pic('sunset-over-the-duck-pond'), pic('garden-wedding-ceremony'), pic('ducks-on-the-pond-at-dusk')]}
+  >
+    <a href="/book/" class="btn btn-primary">Book a visit</a>
+    <a href="/venues/" class="btn btn-ghost">View venues</a>
+  </PageHero>
+
+  <Panels items={panels} label="Stay, celebrate and play at The Duckpond" />
+
+  <Section
+    eyebrow="Welcome to The Duckpond"
+    lines={[{t: 'A countryside'}, {t: 'escape on the', i: true}, {t: 'North Coast'}]}
+  >
+    <div class="copy text-[18px]" data-reveal>
+      <p>
+        Nestled along the R102 between Ballito and Tongaat, The Duckpond is centred around a scenic pond where white ducks
+        drift past thatched lapas and the sun sets pink over the water. It is a place for slowing down: a relaxed farm
+        setting with cosy accommodation, venues for every kind of celebration, a restaurant, fishing and play areas for
+        children, all on one property.
+      </p>
+      <p>
+        Our motto is simple: <em>where families flock together</em>. Whether you are planning a garden wedding for 100
+        guests, a first birthday in the Kids Lapa, a year-end function, a quiet weekend away or simply a Sunday braai with
+        the family, you will find a space for it at The Duckpond.
+      </p>
+      <p>
+        We are on the KwaZulu-Natal North Coast, close to Ballito, Salt Rock, Umhlali, Tongaat and King
+        Shaka International Airport, which makes us an easy meeting point for families coming from Durban, Umhlanga and
+        the wider North Coast.
+      </p>
+    </div>
+    <dl class="mt-12 grid grid-cols-2 gap-x-6 gap-y-8 border-t border-ink/20 pt-8 md:grid-cols-4" data-reveal>
+      <div><dt class="caps text-ink/70">Venues</dt><dd class="display text-[44px]">8</dd></div>
+      <div><dt class="caps text-ink/70">Guests up to</dt><dd class="display text-[44px]">100</dd></div>
+      <div><dt class="caps text-ink/70">Rooms from</dt><dd class="display text-[44px]">{rand(rooms[0].price)}</dd></div>
+      <div><dt class="caps text-ink/70">Fishing</dt><dd class="display text-[44px]">{rand(fishing.price)}</dd></div>
+    </dl>
+  </Section>
+
+  <Section tone="cream" stacked eyebrow="Everything at the pond" lines={[{t: 'One place,'}, {t: 'many reasons to visit', i: true}]}>
+    <ul class="grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-4">
+      {
+        explore.map((e, i) => (
+          <li data-reveal style={`--d:${(i % 4) * 0.06}s`}>
+            <a href={e.href} class="group block">
+              <div class="overflow-hidden">
+                <Image
+                  src={e.img.src}
+                  alt={e.img.alt}
+                  widths={[400, 700]}
+                  sizes="(min-width: 1024px) 24vw, (min-width: 640px) 48vw, 100vw"
+                  loading="lazy"
+                  class="aspect-[4/5] w-full object-cover transition-transform duration-[1200ms] ease-silk group-hover:scale-[1.05]"
+                />
+              </div>
+              <h3 class="display mt-5 text-[30px] group-hover:text-raspberry">{e.title}</h3>
+              <p class="mt-2 text-ink/75">{e.text}</p>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </Section>
+
+  <section class="on-dark bg-raspberry py-16 text-white md:py-20">
+    <div class="mx-auto flex max-w-[1680px] flex-col gap-8 px-5 md:flex-row md:items-end md:justify-between md:px-14" data-reveal>
+      <div>
+        <p class="caps text-white/85">Weekday special · {weekdaySpecial.label}</p>
+        <h2 class="display mt-3 text-[clamp(44px,6vw,104px)]">
+          <span class="block">50% off</span><span class="it block">venue hire</span>
+        </h2>
+        <p class="mt-4 max-w-[54ch] text-white/90">
+          Why pay more on the weekend? Host your birthday, anniversary, corporate event, baby shower or family get-together
+          {weekdaySpecial.days.toLowerCase()} and pay half price on any of our eight venues.
+        </p>
+      </div>
+      <div class="flex flex-wrap gap-3">
+        <a href="/specials/" class="btn bg-white text-ink hover:bg-paper">See the special</a>
+        <a href="/book/?type=venue" class="btn btn-ghost">Request a date</a>
+      </div>
+    </div>
+  </section>
+
+  <Section stacked eyebrow="Celebrations at The Duckpond" lines={[{t: 'Made for'}, {t: 'unforgettable memories', i: true}]}>
+    <div class="space-y-24 md:space-y-32">
+      <Feature image={pic('garden-wedding-aisle')} portrait eyebrow="Weddings" title="Say yes on the lawn">
+        <p>
+          Exchange vows on the green lawn under a floral arch, then move into the Wedding &amp; Conference Centre for up to
+          100 guests, with its draped ceiling, chandeliers and kitchen. Bring your own décor and caterer, and keep the
+          whole day on one beautiful property.
+        </p>
+        <p><a href="/venues/#weddings">Wedding venue details</a></p>
+      </Feature>
+      <Feature image={pic('first-birthday-balloon-decor')} reverse eyebrow="Birthdays, baby showers & parties" title="Parties of every size">
+        <p>
+          From a 15-seat lapa for an intimate birthday to the Bar Shack for 70, there is a venue to fit. Children’s parties
+          are easy here: the Kids Lapa sits next to the play areas, so parents relax while little ones play.
+        </p>
+        <p><a href="/venues/#parties">Party venues</a> · <a href="/kids-play/">Kids play areas</a></p>
+      </Feature>
+      <Feature image={pic('conference-centre-function-tables')} eyebrow="Conferences & year-end functions" title="Meet by the water">
+        <p>
+          Swap the boardroom for the countryside. The Wedding &amp; Conference Centre seats 100 and suits conferences,
+          training days, team-building and year-end functions, with on-site rooms at The Duckpond Inn for guests who stay
+          over.
+        </p>
+        <p><a href="/venues/#conferences">Conference venue details</a></p>
+      </Feature>
+    </div>
+  </Section>
+
+  <Section tone="ink" eyebrow="Find us" lines={[{t: 'On the R102,'}, {t: 'between Ballito', i: true}, {t: '& Tongaat'}]}>
+    <div class="grid gap-10 sm:grid-cols-2" data-reveal>
+      <div>
+        <h3 class="caps text-white/70">Address</h3>
+        <address class="mt-2 text-[18px] not-italic">{site.address.oneLine}</address>
+        <a
+          href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(site.mapQuery)}`}
+          class="btn btn-ghost mt-6"
+          rel="noopener"
+          target="_blank">Open in Google Maps</a
+        >
+      </div>
+      <div>
+        <h3 class="caps text-white/70">Venue hours</h3>
+        <ul class="mt-2 space-y-1 text-[18px]">
+          {hours.map((h) => <li>{h.days}<br /><span class="text-white/75">{h.time}</span></li>)}
+        </ul>
+        <h3 class="caps mt-8 text-white/70">Bookings</h3>
+        <p class="mt-2 text-[18px]">
+          <a href={`tel:${contacts[0].tel}`} class="hover:text-sage">{contacts[0].display}</a><br />
+          <a href={`mailto:${site.email.bookings}`} class="break-all hover:text-sage">{site.email.bookings}</a>
+        </p>
+      </div>
+    </div>
+  </Section>
+
+  <Faq items={faqs} />
+
+  <CtaBand
+    lines={[{t: 'Bring the'}, {t: 'whole flock.', i: true}]}
+    text="Tell us what you are planning and when. We will check availability and get back to you to confirm your room, venue or day out."
+    image={pic('sunset-pond-reflection')}
+  >
+    <a href="/book/" class="btn btn-primary">Send a booking request</a>
+    <a href={`https://wa.me/${site.phone.whatsapp}`} class="btn btn-ghost" rel="noopener" target="_blank">WhatsApp us</a>
+  </CtaBand>
+</Base>

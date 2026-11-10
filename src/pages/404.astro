@@ -1,0 +1,17 @@
+---
+import Base from '../layouts/Base.astro';
+import {nav} from '../data/site';
+---
+
+<Base title="Page not found | The Duckpond" description="This page could not be found. Explore The Duckpond: accommodation, venues, restaurant and more." noindex>
+  <section class="on-dark flex min-h-svh items-center bg-ink py-32 text-white">
+    <div class="mx-auto w-full max-w-[1680px] px-5 md:px-14">
+      <p class="caps text-white/80">404 · Page not found</p>
+      <h1 class="display mt-4 text-[clamp(52px,8vw,140px)]"><span class="block">This duck</span><span class="it block">has flown.</span></h1>
+      <p class="mt-8 max-w-[52ch] text-[18px] text-white/90">The page you were looking for isn’t here. Try one of these instead:</p>
+      <ul class="mt-6 flex flex-wrap gap-3">
+        {nav.map((n) => <li><a href={n.href} class="btn btn-ghost">{n.label}</a></li>)}
+      </ul>
+    </div>
+  </section>
+</Base>

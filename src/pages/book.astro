@@ -1,0 +1,640 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Faq from '../components/Faq.astro';
+import {contacts, rand, rooms, site, venueName, venues, weekdaySpecial} from '../data/site';
+import {pic} from '../lib/photos';
+import {faqSchema, type Faq as FaqItem} from '../lib/schema';
+
+const crumbs = [
+  {name: 'Home', href: '/'},
+  {name: 'Book now', href: '/book/'},
+];
+
+const eventTypes = [
+  'Wedding',
+  'Birthday party',
+  'Kids party',
+  'Baby shower / gender reveal',
+  'Bridal shower',
+  'Family gathering',
+  'Conference / corporate',
+  'Year-end function',
+  'Braai day',
+  'Other',
+];
+const topics = [
+  ['fishing', 'Fishing day'],
+  ['restaurant', 'Restaurant / group meal'],
+  ['viewing', 'Venue viewing'],
+  ['car-wash', 'Car wash'],
+  ['question', 'General question'],
+];
+
+// Pricing data for the live estimate (read by the script below).
+const pricing = {
+  rooms: Object.fromEntries(rooms.map((r) => [r.id, {name: r.name, price: r.price, sleeps: r.sleeps}])),
+  roomCap: {single: 1, sharing: 2, family: 6, 'six-sleeper': 6},
+  venues: Object.fromEntries(venues.map((v) => [v.id, {name: venueName(v), short: v.name, price: v.price, weekday: v.weekday, seats: v.seats}])),
+  special: {from: weekdaySpecial.from, to: weekdaySpecial.to},
+  whatsapp: site.phone.whatsapp,
+  email: site.email.bookings,
+};
+
+const faqs: FaqItem[] = [
+  {
+    q: 'Is my booking confirmed when I send the form?',
+    a: 'Not yet. The form sends a booking request to our team. We check availability and reply by WhatsApp, phone or email to confirm and explain how to secure your booking.',
+  },
+  {
+    q: 'How quickly will you reply?',
+    a: `We aim to reply as soon as possible during venue hours. For urgent bookings, call or WhatsApp ${contacts[0].name} on ${contacts[0].display}.`,
+  },
+  {
+    q: 'Is the price on the form final?',
+    a: 'The estimate uses our advertised rates and the current weekday special. We confirm the final price when we reply, as prices are subject to change and the special does not apply on public holidays.',
+  },
+  {
+    q: 'What happens to my details?',
+    a: 'We only use your name, phone number and email to respond to your booking request. We do not share them with anyone else.',
+  },
+];
+---
+
+<Base
+  title="Book Online | Rooms & Venue Hire at The Duckpond Ballito"
+  description="Send a booking request to The Duckpond: rooms at The Duckpond Inn, venue hire for 15 to 100 guests, fishing days and more. See your price estimate instantly."
+  crumbs={crumbs}
+  schema={[faqSchema(faqs)]}
+>
+  <PageHero
+    eyebrow="Book online · The Duckpond Inn · Venue hire · Day visits"
+    lines={[{t: 'Book your'}, {t: 'visit', i: true}]}
+    intro="Tell us what you would like to book and when. You will see an estimate straight away, and our team will reply to confirm availability."
+    images={[pic('garden-ceremony-red-carpet')]}
+    crumbs={crumbs}
+  >
+    <a href="#booking" class="btn btn-primary">Start your request</a>
+  </PageHero>
+
+  <section id="booking" class="scroll-mt-6 bg-paper py-16 md:py-24">
+    <div class="mx-auto grid max-w-[1680px] gap-12 px-5 md:px-14 lg:grid-cols-12">
+      <div class="lg:col-span-7">
+        <div data-form-wrap>
+          <p class="caps text-forest">Booking request</p>
+          <h2 class="display mt-3 text-[clamp(38px,4.6vw,72px)]"><span class="block">Tell us</span><span class="it block">your plans</span></h2>
+          <p class="mt-4 text-ink/75">Fields marked <span class="req">*</span> are required.</p>
+
+          <div data-error-summary tabindex="-1" hidden class="mt-8 border-l-4 border-raspberry bg-raspberry/5 p-5" role="alert" aria-labelledby="err-title">
+            <h3 id="err-title" class="display text-[26px]">Please check these details</h3>
+            <ul class="mt-2 list-disc pl-5"></ul>
+          </div>
+
+          <form
+            name="booking"
+            method="POST"
+            action="/book/thanks/"
+            data-netlify="true"
+            netlify-honeypot="bot-field"
+            novalidate
+            class="mt-10 space-y-12"
+            data-booking
+          >
+            <input type="hidden" name="form-name" value="booking" />
+            <input type="hidden" name="estimate" value="" />
+            <p class="hidden"><label>Leave this empty: <input name="bot-field" tabindex="-1" autocomplete="off" /></label></p>
+
+            <fieldset class="field">
+              <legend>What would you like to book? <span class="req">*</span></legend>
+              <div class="mt-2 grid gap-3 sm:grid-cols-3" id="type">
+                {
+                  [
+                    ['accommodation', 'A room', 'The Duckpond Inn'],
+                    ['venue', 'A venue', 'Events & functions'],
+                    ['other', 'Something else', 'Fishing, meals, viewings'],
+                  ].map(([v, t, d]) => (
+                    <label class="relative flex min-h-[88px] cursor-pointer flex-col justify-center border border-ink/25 bg-white px-5 py-4 normal-case tracking-normal transition-colors has-[:checked]:border-forest has-[:checked]:bg-forest has-[:checked]:text-white has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-raspberry">
+                      <input type="radio" name="booking-type" value={v} class="sr-only" required />
+                      <span class="display text-[clamp(21px,1.9vw,26px)] [overflow-wrap:anywhere]">{t}</span>
+                      <span class="text-[14px] opacity-80">{d}</span>
+                    </label>
+                  ))
+                }
+              </div>
+              <p class="error" data-error-for="booking-type" hidden></p>
+            </fieldset>
+
+            <!-- Accommodation -->
+            <fieldset data-section="accommodation" hidden disabled class="space-y-6">
+              <legend class="display mb-6 text-[32px]">Your stay</legend>
+              <div class="grid gap-6 sm:grid-cols-2">
+                <div class="field sm:col-span-2">
+                  <label for="room">Room type <span class="req">*</span></label>
+                  <select id="room" name="room" required>
+                    <option value="">Choose a room</option>
+                    {rooms.map((r) => <option value={r.id}>{r.name} ({r.sleeps}) · {rand(r.price)} per night</option>)}
+                  </select>
+                  <p class="error" data-error-for="room" hidden></p>
+                </div>
+                <div class="field">
+                  <label for="checkin">Check-in <span class="req">*</span></label>
+                  <input id="checkin" name="checkin" type="date" required />
+                  <p class="error" data-error-for="checkin" hidden></p>
+                </div>
+                <div class="field">
+                  <label for="checkout">Check-out <span class="req">*</span></label>
+                  <input id="checkout" name="checkout" type="date" required />
+                  <p class="error" data-error-for="checkout" hidden></p>
+                </div>
+                <div class="field">
+                  <label for="rooms-count">Number of rooms</label>
+                  <input id="rooms-count" name="rooms" type="number" inputmode="numeric" min="1" max="20" value="1" />
+                </div>
+                <div class="field">
+                  <label for="adults">Adults <span class="req">*</span></label>
+                  <input id="adults" name="adults" type="number" inputmode="numeric" min="1" max="60" value="2" required />
+                  <p class="error" data-error-for="adults" hidden></p>
+                </div>
+                <div class="field">
+                  <label for="children">Children</label>
+                  <input id="children" name="children" type="number" inputmode="numeric" min="0" max="40" value="0" />
+                </div>
+              </div>
+              <p class="text-[15px] text-raspberry-deep" data-cap-warning hidden aria-live="polite"></p>
+            </fieldset>
+
+            <!-- Venue -->
+            <fieldset data-section="venue" hidden disabled class="space-y-6">
+              <legend class="display mb-6 text-[32px]">Your event</legend>
+              <div class="grid gap-6 sm:grid-cols-2">
+                <div class="field sm:col-span-2">
+                  <label for="venue">Venue <span class="req">*</span></label>
+                  <select id="venue" name="venue" required>
+                    <option value="">Choose a venue</option>
+                    {venues.map((v) => <option value={v.id}>{venueName(v)} · {rand(v.price)}</option>)}
+                  </select>
+                  <p class="hint">Not sure? Choose the closest and tell us more below. Compare all <a href="/venues/#prices" class="underline">venues and prices</a>.</p>
+                  <p class="error" data-error-for="venue" hidden></p>
+                </div>
+                <div class="field">
+                  <label for="event-date">Event date <span class="req">*</span></label>
+                  <input id="event-date" name="event-date" type="date" required aria-describedby="event-date-hint" />
+                  <p class="hint" id="event-date-hint">Monday to Thursday dates until 30 November 2026 get 50% off.</p>
+                  <p class="error" data-error-for="event-date" hidden></p>
+                </div>
+                <div class="field">
+                  <label for="guests">Number of guests <span class="req">*</span></label>
+                  <input id="guests" name="guests" type="number" inputmode="numeric" min="1" max="500" required />
+                  <p class="error" data-error-for="guests" hidden></p>
+                </div>
+                <div class="field sm:col-span-2">
+                  <label for="event-type">Type of event</label>
+                  <select id="event-type" name="event-type">
+                    <option value="">Choose one</option>
+                    {eventTypes.map((e) => <option>{e}</option>)}
+                  </select>
+                </div>
+                <label class="flex items-start gap-3 sm:col-span-2">
+                  <input type="checkbox" name="guest-rooms" value="yes" class="mt-1 size-5 accent-forest" />
+                  <span>Some of our guests would like rooms at The Duckpond Inn too</span>
+                </label>
+              </div>
+              <p class="text-[15px] text-raspberry-deep" data-seat-warning hidden aria-live="polite"></p>
+            </fieldset>
+
+            <!-- Other -->
+            <fieldset data-section="other" hidden disabled class="space-y-6">
+              <legend class="display mb-6 text-[32px]">Your visit</legend>
+              <div class="grid gap-6 sm:grid-cols-2">
+                <div class="field">
+                  <label for="topic">What is it about? <span class="req">*</span></label>
+                  <select id="topic" name="topic" required>
+                    <option value="">Choose one</option>
+                    {topics.map(([v, t]) => <option value={v}>{t}</option>)}
+                  </select>
+                  <p class="error" data-error-for="topic" hidden></p>
+                </div>
+                <div class="field">
+                  <label for="visit-date">Preferred date</label>
+                  <input id="visit-date" name="visit-date" type="date" />
+                </div>
+                <div class="field">
+                  <label for="party-size">Number of people</label>
+                  <input id="party-size" name="party-size" type="number" inputmode="numeric" min="1" max="500" />
+                </div>
+              </div>
+            </fieldset>
+
+            <!-- Contact details -->
+            <fieldset class="space-y-6">
+              <legend class="display mb-6 text-[32px]">Your details</legend>
+              <div class="grid gap-6 sm:grid-cols-2">
+                <div class="field sm:col-span-2">
+                  <label for="name">Full name <span class="req">*</span></label>
+                  <input id="name" name="name" type="text" autocomplete="name" required />
+                  <p class="error" data-error-for="name" hidden></p>
+                </div>
+                <div class="field">
+                  <label for="phone">Phone / WhatsApp <span class="req">*</span></label>
+                  <input id="phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" required placeholder="e.g. 082 123 4567" />
+                  <p class="error" data-error-for="phone" hidden></p>
+                </div>
+                <div class="field">
+                  <label for="email">Email <span class="req">*</span></label>
+                  <input id="email" name="email" type="email" autocomplete="email" required />
+                  <p class="error" data-error-for="email" hidden></p>
+                </div>
+                <div class="field sm:col-span-2">
+                  <label for="contact-pref">Best way to reach you</label>
+                  <select id="contact-pref" name="contact-pref">
+                    <option>WhatsApp</option>
+                    <option>Phone call</option>
+                    <option>Email</option>
+                  </select>
+                </div>
+                <div class="field sm:col-span-2">
+                  <label for="message">Anything else we should know?</label>
+                  <textarea id="message" name="message" rows="5" placeholder="Times, décor, catering, special requests…"></textarea>
+                </div>
+              </div>
+            </fieldset>
+
+            <div class="space-y-4 border-t border-ink/20 pt-8">
+              <p class="text-[15px] text-ink/70">
+                This is a booking request, not a confirmed booking. We use your details only to reply to you.
+              </p>
+              <div class="flex flex-wrap gap-3">
+                <button type="submit" class="btn btn-primary min-w-[220px] disabled:cursor-wait disabled:opacity-60" data-submit>
+                  <span data-submit-label>Send booking request</span>
+                </button>
+                <button type="button" class="btn btn-ghost" data-whatsapp>Send on WhatsApp instead</button>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <!-- Shown after sending -->
+        <div data-done hidden tabindex="-1" class="outline-none" aria-live="polite">
+          <p class="caps text-forest" data-done-eyebrow>Request sent</p>
+          <h2 class="display mt-3 text-[clamp(40px,5vw,80px)]" data-done-title>
+            <span class="block">Thank you,</span><span class="it block" data-done-name>we’ll be in touch</span>
+          </h2>
+          <p class="copy mt-6 text-[18px]" data-done-text>
+            Your booking request is with our team. We will check availability and reply to confirm. For anything urgent, call
+            or WhatsApp {contacts[0].name} on <a href={`tel:${contacts[0].tel}`}>{contacts[0].display}</a>.
+          </p>
+          <pre class="mt-8 max-w-[64ch] bg-cream p-5 text-[14px] whitespace-pre-wrap" data-done-summary></pre>
+          <div class="mt-8 flex flex-wrap gap-3">
+            <a class="btn btn-primary" data-done-wa rel="noopener" target="_blank">Send on WhatsApp</a>
+            <a class="btn btn-ghost" data-done-mail>Send by email</a>
+            <a href="/book/" class="btn btn-ghost">New request</a>
+          </div>
+        </div>
+      </div>
+
+      <aside class="lg:col-span-5">
+        <div class="lg:sticky lg:top-28">
+          <div class="on-dark bg-ink p-7 text-white md:p-9" aria-live="polite">
+            <p class="caps text-white/70">Your estimate</p>
+            <p class="display mt-3 text-[clamp(44px,4.4vw,72px)] tabular-nums" data-est-total>—</p>
+            <p class="mt-2 text-white/85" data-est-detail>Choose what you would like to book to see an estimate.</p>
+            <p class="caps mt-5 hidden bg-raspberry px-3 py-2 text-white" data-est-special>Weekday special applied: 50% off</p>
+            <p class="mt-6 border-t border-white/20 pt-4 text-[14px] text-white/70">
+              Estimates use advertised rates. We confirm the final price when we reply. The weekday special excludes public
+              holidays.
+            </p>
+          </div>
+          <div class="mt-6 bg-cream p-7 md:p-9">
+            <h2 class="caps text-ink/70">Prefer to talk?</h2>
+            <ul class="mt-3 space-y-3">
+              {
+                contacts.map((c) => (
+                  <li>
+                    <a href={`tel:${c.tel}`} class="text-[18px] underline underline-offset-4 hover:text-raspberry">
+                      {c.name}: {c.display}
+                    </a>
+                    <span class="block text-[14px] text-ink/70">{c.role}</span>
+                  </li>
+                ))
+              }
+            </ul>
+            <p class="mt-4">
+              <a href={`mailto:${site.email.bookings}`} class="break-all underline underline-offset-4 hover:text-raspberry">{site.email.bookings}</a>
+            </p>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <Faq items={faqs} lines={['Booking', 'questions']} />
+  <script is:inline type="application/json" id="pricing" set:html={JSON.stringify(pricing)} />
+</Base>
+
+<script>
+  type Pricing = {
+    rooms: Record<string, {name: string; price: number; sleeps: string}>;
+    roomCap: Record<string, number>;
+    venues: Record<string, {name: string; short: string; price: number; weekday: number; seats: number}>;
+    special: {from: string; to: string};
+    whatsapp: string;
+    email: string;
+  };
+  const P: Pricing = JSON.parse(document.getElementById('pricing')!.textContent!);
+
+  const form = document.querySelector<HTMLFormElement>('[data-booking]')!;
+  const summaryBox = document.querySelector<HTMLElement>('[data-error-summary]')!;
+  const $ = <T extends HTMLElement = HTMLInputElement>(sel: string) => form.querySelector<T>(sel)!;
+  const val = (name: string) => (form.elements.namedItem(name) as HTMLInputElement | null)?.value?.trim() ?? '';
+  const R = (n: number) => 'R' + Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+
+  // Local "today" as YYYY-MM-DD for min dates.
+  const now = new Date();
+  const today = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+  ['checkin', 'checkout', 'event-date', 'visit-date'].forEach((id) => form.querySelector<HTMLInputElement>('#' + id)?.setAttribute('min', today));
+
+  const type = () => (form.querySelector<HTMLInputElement>('input[name="booking-type"]:checked')?.value ?? '') as '' | 'accommodation' | 'venue' | 'other';
+
+  function showSection() {
+    const t = type();
+    form.querySelectorAll<HTMLFieldSetElement>('[data-section]').forEach((fs) => {
+      const on = fs.dataset.section === t;
+      fs.hidden = !on;
+      fs.disabled = !on;
+    });
+    estimate();
+  }
+
+  const days = (a: string, b: string) => Math.round((Date.parse(b) - Date.parse(a)) / 86400000);
+  const isSpecial = (d: string) => {
+    if (!d || d < P.special.from || d > P.special.to) return false;
+    const wd = new Date(d + 'T12:00:00').getDay();
+    return wd >= 1 && wd <= 4;
+  };
+
+  const total = document.querySelector<HTMLElement>('[data-est-total]')!;
+  const detail = document.querySelector<HTMLElement>('[data-est-detail]')!;
+  const specialTag = document.querySelector<HTMLElement>('[data-est-special]')!;
+  const capWarn = $<HTMLElement>('[data-cap-warning]');
+  const seatWarn = $<HTMLElement>('[data-seat-warning]');
+  let estimateText = '';
+
+  function estimate() {
+    const t = type();
+    specialTag.classList.add('hidden');
+    capWarn.hidden = true;
+    seatWarn.hidden = true;
+    estimateText = '';
+    if (t === 'accommodation') {
+      const room = P.rooms[val('room')];
+      const n = val('checkin') && val('checkout') ? days(val('checkin'), val('checkout')) : 0;
+      const count = Math.max(1, parseInt(val('rooms')) || 1);
+      if (!room) {
+        total.textContent = '—';
+        detail.textContent = 'Choose a room to see the nightly rate.';
+        return;
+      }
+      if (n > 0) {
+        const sum = room.price * n * count;
+        total.textContent = R(sum);
+        detail.textContent = `${count} × ${room.name} · ${n} night${n > 1 ? 's' : ''} at ${R(room.price)} per night`;
+        estimateText = `${R(sum)} (${count} × ${room.name}, ${n} night${n > 1 ? 's' : ''} at ${R(room.price)})`;
+      } else {
+        total.textContent = R(room.price);
+        detail.textContent = `${room.name} per night (sleeps ${room.sleeps}). Add your dates for a total.`;
+      }
+      const people = (parseInt(val('adults')) || 0) + (parseInt(val('children')) || 0);
+      const cap = (P.roomCap[val('room')] ?? 6) * count;
+      if (people > cap) {
+        capWarn.hidden = false;
+        capWarn.textContent = `${people} guests is more than ${count > 1 ? 'these rooms' : 'this room'} usually sleeps (${room.sleeps} per room). Add a room or choose a family room or 6 Sleeper.`;
+      }
+      return;
+    }
+    if (t === 'venue') {
+      const v = P.venues[val('venue')];
+      if (!v) {
+        total.textContent = '—';
+        detail.textContent = 'Choose a venue to see the price.';
+        return;
+      }
+      const d = val('event-date');
+      const sp = isSpecial(d);
+      const price = sp ? v.weekday : v.price;
+      total.textContent = R(price);
+      detail.textContent = `${v.name} venue hire${d ? ' on ' + new Date(d + 'T12:00:00').toLocaleDateString('en-ZA', {weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'}) : ''}.`;
+      if (sp) specialTag.classList.remove('hidden');
+      estimateText = `${R(price)} (${v.name}${sp ? ', weekday special 50% off' : ''})`;
+      const g = parseInt(val('guests')) || 0;
+      if (g > v.seats) {
+        seatWarn.hidden = false;
+        seatWarn.textContent =
+          g > 100
+            ? `Our largest venue seats 100. For ${g} guests, tell us more in the message box and we will advise.`
+            : `The ${v.short} seats ${v.seats}. For ${g} guests, choose a larger venue such as the Wedding / Conference Centre (100 seats).`;
+      }
+      return;
+    }
+    if (t === 'other') {
+      total.textContent = val('topic') === 'fishing' ? 'R40' : '—';
+      detail.textContent = val('topic') === 'fishing' ? 'Fishing is R40 per rod.' : 'We will reply with details and prices.';
+      return;
+    }
+    total.textContent = '—';
+    detail.textContent = 'Choose what you would like to book to see an estimate.';
+  }
+
+  // ---- Validation -------------------------------------------------------
+  const emailOk = (s: string) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(s);
+  const phoneOk = (s: string) => s.replace(/\D/g, '').length >= 9;
+
+  const rules: Record<string, () => string> = {
+    'booking-type': () => (type() ? '' : 'Choose a room, a venue or something else.'),
+    room: () => (val('room') ? '' : 'Choose a room type.'),
+    checkin: () => (!val('checkin') ? 'Enter your check-in date.' : val('checkin') < today ? 'Check-in can’t be in the past.' : ''),
+    checkout: () =>
+      !val('checkout') ? 'Enter your check-out date.' : val('checkin') && val('checkout') <= val('checkin') ? 'Check-out must be after check-in.' : '',
+    adults: () => ((parseInt(val('adults')) || 0) >= 1 ? '' : 'At least one adult is needed.'),
+    venue: () => (val('venue') ? '' : 'Choose a venue.'),
+    'event-date': () => (!val('event-date') ? 'Enter the date of your event.' : val('event-date') < today ? 'The event date can’t be in the past.' : ''),
+    guests: () => ((parseInt(val('guests')) || 0) >= 1 ? '' : 'Enter how many guests you expect.'),
+    topic: () => (val('topic') ? '' : 'Tell us what your visit is about.'),
+    name: () => (val('name').length >= 2 ? '' : 'Enter your full name.'),
+    phone: () => (!val('phone') ? 'Enter a phone number so we can reach you.' : phoneOk(val('phone')) ? '' : 'Enter a valid phone number, e.g. 082 123 4567.'),
+    email: () => (!val('email') ? 'Enter your email address.' : emailOk(val('email')) ? '' : 'Enter a valid email, e.g. name@example.com.'),
+  };
+
+  const activeFields = () => {
+    const t = type();
+    const base = ['booking-type'];
+    const per = t === 'accommodation' ? ['room', 'checkin', 'checkout', 'adults'] : t === 'venue' ? ['venue', 'event-date', 'guests'] : t === 'other' ? ['topic'] : [];
+    return [...base, ...per, 'name', 'phone', 'email'];
+  };
+
+  function setError(name: string, msg: string) {
+    const out = form.querySelector<HTMLElement>(`[data-error-for="${name}"]`);
+    const inputs = form.querySelectorAll<HTMLInputElement>(`[name="${name}"]`);
+    if (out) {
+      out.id = `err-${name}`;
+      out.hidden = !msg;
+      out.textContent = msg;
+    }
+    inputs.forEach((i) => {
+      i.setAttribute('aria-invalid', String(!!msg));
+      const ids = (i.getAttribute('aria-describedby') ?? '').split(' ').filter((x) => x && x !== `err-${name}`);
+      if (msg) ids.push(`err-${name}`);
+      if (ids.length) i.setAttribute('aria-describedby', ids.join(' '));
+      else i.removeAttribute('aria-describedby');
+    });
+  }
+
+  function validate(): {name: string; msg: string}[] {
+    return activeFields()
+      .map((name) => ({name, msg: rules[name]()}))
+      .filter((e) => {
+        setError(e.name, e.msg);
+        return e.msg;
+      });
+  }
+
+  // Validate a field when the user leaves it; clear errors as they fix them.
+  form.addEventListener('focusout', (e) => {
+    const name = (e.target as HTMLInputElement).name;
+    if (rules[name] && activeFields().includes(name) && (e.target as HTMLInputElement).value) setError(name, rules[name]());
+  });
+  form.addEventListener('input', (e) => {
+    const name = (e.target as HTMLInputElement).name;
+    if (rules[name] && (e.target as HTMLElement).getAttribute('aria-invalid') === 'true') setError(name, rules[name]());
+    estimate();
+  });
+  form.addEventListener('change', (e) => {
+    if ((e.target as HTMLInputElement).name === 'booking-type') {
+      setError('booking-type', '');
+      showSection();
+    }
+    estimate();
+  });
+
+  function showSummary(errors: {name: string; msg: string}[]) {
+    const ul = summaryBox.querySelector('ul')!;
+    ul.innerHTML = '';
+    errors.forEach((e) => {
+      const li = document.createElement('li');
+      const a = document.createElement('a');
+      const target = form.querySelector<HTMLElement>(`[name="${e.name}"]`);
+      a.href = '#' + (e.name === 'booking-type' ? 'type' : target?.id ?? '');
+      a.textContent = e.msg;
+      a.className = 'underline';
+      a.addEventListener('click', (ev) => {
+        ev.preventDefault();
+        target?.focus();
+      });
+      li.append(a);
+      ul.append(li);
+    });
+    summaryBox.hidden = false;
+    summaryBox.focus();
+  }
+
+  // ---- Message for WhatsApp / email ---------------------------------------
+  function message() {
+    const t = type();
+    const lines = ['Hi The Duckpond, I would like to make a booking request.', ''];
+    if (t === 'accommodation') {
+      lines.push(
+        `Accommodation: ${P.rooms[val('room')]?.name ?? ''} × ${val('rooms') || 1}`,
+        `Check-in: ${val('checkin')}  Check-out: ${val('checkout')}`,
+        `Guests: ${val('adults')} adults, ${val('children') || 0} children`,
+      );
+    } else if (t === 'venue') {
+      lines.push(
+        `Venue: ${P.venues[val('venue')]?.name ?? ''}`,
+        `Date: ${val('event-date')}`,
+        `Guests: ${val('guests')}`,
+        val('event-type') ? `Event: ${val('event-type')}` : '',
+        (form.elements.namedItem('guest-rooms') as HTMLInputElement)?.checked ? 'Guests would also like rooms at the Inn.' : '',
+      );
+    } else if (t === 'other') {
+      const topic = form.querySelector<HTMLSelectElement>('#topic')!;
+      lines.push(`About: ${topic.selectedOptions[0]?.text ?? ''}`, val('visit-date') ? `Date: ${val('visit-date')}` : '', val('party-size') ? `People: ${val('party-size')}` : '');
+    }
+    if (estimateText) lines.push(`Estimate: ${estimateText}`);
+    lines.push('', `Name: ${val('name')}`, `Phone: ${val('phone')}`, `Email: ${val('email')}`, `Best way to reach me: ${val('contact-pref')}`);
+    if (val('message')) lines.push('', val('message'));
+    return lines.filter((l, i, a) => l !== '' || a[i - 1] !== '').join('\n');
+  }
+
+  const waHref = () => `https://wa.me/${P.whatsapp}?text=${encodeURIComponent(message())}`;
+  const mailHref = () => `mailto:${P.email}?subject=${encodeURIComponent('Booking request: ' + val('name'))}&body=${encodeURIComponent(message())}`;
+
+  function done(sent: boolean) {
+    const wrap = document.querySelector<HTMLElement>('[data-form-wrap]')!;
+    const box = document.querySelector<HTMLElement>('[data-done]')!;
+    const first = val('name').split(' ')[0];
+    document.querySelector<HTMLElement>('[data-done-summary]')!.textContent = message();
+    document.querySelector<HTMLAnchorElement>('[data-done-wa]')!.href = waHref();
+    document.querySelector<HTMLAnchorElement>('[data-done-mail]')!.href = mailHref();
+    document.querySelector<HTMLElement>('[data-done-name]')!.textContent = sent ? `${first}.` : 'almost there';
+    if (!sent) {
+      document.querySelector<HTMLElement>('[data-done-eyebrow]')!.textContent = 'Not sent yet';
+      document.querySelector<HTMLElement>('[data-done-title] span')!.textContent = 'One more step,';
+      document.querySelector<HTMLElement>('[data-done-text]')!.textContent =
+        'We could not send your request online just now. Please send it to us on WhatsApp or by email using the buttons below. Your details are already filled in.';
+    }
+    wrap.hidden = true;
+    box.hidden = false;
+    box.focus();
+    box.scrollIntoView({behavior: 'smooth', block: 'start'});
+  }
+
+  // ---- Submit -------------------------------------------------------------
+  const submitBtn = $<HTMLButtonElement>('[data-submit]');
+  const submitLabel = $<HTMLElement>('[data-submit-label]');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const errors = validate();
+    if (errors.length) return showSummary(errors);
+    summaryBox.hidden = true;
+    (form.elements.namedItem('estimate') as HTMLInputElement).value = estimateText;
+    // Forms are received by Netlify; the local dev server would just echo "OK".
+    if (import.meta.env.DEV) return done(false);
+    submitBtn.disabled = true;
+    submitLabel.textContent = 'Sending…';
+    try {
+      const body = new URLSearchParams(new FormData(form) as unknown as Record<string, string>).toString();
+      const res = await fetch('/', {method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body});
+      done(res.ok);
+    } catch {
+      done(false);
+    } finally {
+      submitBtn.disabled = false;
+      submitLabel.textContent = 'Send booking request';
+    }
+  });
+
+  $<HTMLButtonElement>('[data-whatsapp]').addEventListener('click', () => {
+    const errors = validate();
+    if (errors.length) return showSummary(errors);
+    summaryBox.hidden = true;
+    window.open(waHref(), '_blank', 'noopener');
+  });
+
+  // ---- Deep links: /book/?type=venue&venue=island-stage ---------------------
+  const q = new URLSearchParams(location.search);
+  const qt = q.get('type');
+  if (qt) {
+    const radio = form.querySelector<HTMLInputElement>(`input[name="booking-type"][value="${qt}"]`);
+    if (radio) radio.checked = true;
+  }
+  const pre: [string, string | null][] = [
+    ['room', q.get('room')],
+    ['venue', q.get('venue')],
+    ['topic', q.get('topic')],
+  ];
+  pre.forEach(([id, v]) => {
+    const el = form.querySelector<HTMLSelectElement>('#' + id);
+    if (el && v && [...el.options].some((o) => o.value === v)) el.value = v;
+  });
+  showSection();
+</script>

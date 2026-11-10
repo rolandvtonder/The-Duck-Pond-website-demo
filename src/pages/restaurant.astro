@@ -1,0 +1,137 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Section from '../components/Section.astro';
+import Feature from '../components/Feature.astro';
+import Faq from '../components/Faq.astro';
+import CtaBand from '../components/CtaBand.astro';
+import {contacts, site} from '../data/site';
+import {pic} from '../lib/photos';
+import {faqSchema, restaurantSchema, type Faq as FaqItem} from '../lib/schema';
+
+const crumbs = [
+  {name: 'Home', href: '/'},
+  {name: 'Restaurant & food', href: '/restaurant/'},
+];
+
+const curry = {display: '072 824 6791', tel: '+27728246791'};
+
+const favourites = [
+  ['Samosas', 'Crisp, golden and made for sharing.'],
+  ['Wors roll & chips', 'A South African classic, straight off the fire.'],
+  ['Bacon, egg, sausage & mushrooms', 'A proper breakfast to start a day at the pond.'],
+  ['Usu & jeqe', 'Traditional tripe with steamed bread.'],
+  ['Ox head & jeqe', 'Slow-cooked and hearty, served with steamed bread.'],
+  ['Traditional Indian cuisine', 'Curries and more from Curry Corner.'],
+];
+
+const faqs: FaqItem[] = [
+  {
+    q: 'Is there a restaurant at The Duckpond?',
+    a: 'Yes. The Duckpond Restaurant serves good food with great views over the pond, and you will also find The Sitting Duck, the Shisa Nyama and Curry Corner on the property.',
+  },
+  {
+    q: 'What kind of food is served?',
+    a: 'Expect South African favourites: braai meat from the Shisa Nyama, wors rolls and chips, breakfasts, samosas and traditional dishes such as usu and jeqe or ox head and jeqe, plus authentic Indian flavours from Curry Corner. Menus change, so ask on the day for what is available.',
+  },
+  {
+    q: 'Can I bring my own catering to a venue?',
+    a: 'Yes. When you hire a venue you are welcome to bring your own catering and décor. You can also order from the on-site food outlets for your guests.',
+  },
+  {
+    q: 'How do I contact Curry Corner?',
+    a: `Call Curry Corner on ${curry.display} for orders and enquiries.`,
+  },
+  {
+    q: 'Can I eat at The Duckpond without staying over or booking a venue?',
+    a: `Yes. Day visitors are welcome. Pair a meal with fishing, a walk around the pond or time on the play areas. For group bookings, call ${contacts[0].name} on ${contacts[0].display}.`,
+  },
+];
+---
+
+<Base
+  title="Restaurant Ballito R102 | The Duckpond Restaurant, Shisa Nyama & Curry"
+  description="Eat at The Duckpond between Ballito and Tongaat: The Duckpond Restaurant, The Sitting Duck, the Shisa Nyama and Curry Corner's authentic Indian flavours, with pond views."
+  crumbs={crumbs}
+  schema={[restaurantSchema(), faqSchema(faqs)]}
+>
+  <PageHero
+    eyebrow="Restaurant · Shisa Nyama · Curry Corner · The Sitting Duck"
+    lines={[{t: 'Good food,'}, {t: 'great company,', i: true}, {t: 'pond'}, {t: 'views.', i: true}]}
+    intro="From a braai off the fire to authentic Indian flavours, there is something cooking at The Duckpond. Pull up a chair by the water and stay a while."
+    images={[pic('long-table-pond-view')]}
+    crumbs={crumbs}
+  >
+    <a href="#outlets" class="btn btn-primary">Where to eat</a>
+    <a href={`tel:${site.phone.tel}`} class="btn btn-ghost">Call {site.phone.display}</a>
+  </PageHero>
+
+  <Section eyebrow="Eat at The Duckpond" lines={[{t: 'Fishing, food,'}, {t: 'fun…', i: true}]}>
+    <div class="copy text-[18px]" data-reveal>
+      <p>
+        A day at The Duckpond is not complete without something good to eat. After your catch, a morning on the play
+        areas or a walk around the water, unwind with a meal at The Duckpond Restaurant or one of the food outlets on the
+        property.
+      </p>
+      <p>
+        You will find proper South African comfort food here: braaied meat from the Shisa Nyama, wors rolls and chips,
+        hearty breakfasts and traditional favourites, alongside the spice of Curry Corner and coffee from The Sitting
+        Duck. It is relaxed, family-friendly dining with views over the pond, on the R102 between Ballito and Tongaat.
+      </p>
+    </div>
+  </Section>
+
+  <Section id="outlets" tone="cream" stacked eyebrow="Where to eat" lines={[{t: 'Four flavours,'}, {t: 'one pond', i: true}]}>
+    <div class="space-y-24 md:space-y-32">
+      <Feature image={pic('long-table-pond-view')} portrait eyebrow="The Duckpond Restaurant" title="Good food, great views">
+        <p>
+          Our restaurant is the heart of the property, serving everything from a hearty breakfast of bacon, egg, sausage
+          and mushrooms to wors rolls, samosas and traditional dishes. Sit back with family and friends and watch the
+          ducks drift by.
+        </p>
+      </Feature>
+      <Feature image={pic('sitting-duck-shisa-nyama-car-wash-sign')} portrait reverse eyebrow="Shisa Nyama & The Sitting Duck" title="Fire, meat & coffee">
+        <p>
+          The <strong>Shisa Nyama</strong> is where the braai lives: choose your meat and let it sizzle over the coals,
+          South African style. Across the way, <strong>The Sitting Duck</strong> is the spot for a cup of coffee and
+          something to go with it.
+        </p>
+      </Feature>
+      <Feature image={pic('curry-corner-sign')} eyebrow="Curry Corner" title="Spice up your life">
+        <p>
+          Curry Corner brings authentic Indian flavours to The Duckpond, where affordability meets excellence. Try the
+          traditional Indian cuisine and wors rolls.
+        </p>
+        <p>Orders &amp; enquiries: <a href={`tel:${curry.tel}`}>{curry.display}</a></p>
+      </Feature>
+    </div>
+  </Section>
+
+  <Section tone="ink" stacked eyebrow="Favourites from our kitchens" lines={[{t: 'A taste of'}, {t: 'The Duckpond', i: true}]}>
+    <ul class="grid gap-x-10 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        favourites.map(([t, d], i) => (
+          <li class="border-t border-white/25 pt-5" data-reveal style={`--d:${(i % 3) * 0.06}s`}>
+            <h3 class="display text-[30px]">{t}</h3>
+            <p class="mt-2 text-white/75">{d}</p>
+          </li>
+        ))
+      }
+    </ul>
+    <p class="mt-12 max-w-[64ch] text-white/75" data-reveal>
+      Dishes and prices change with the season and special events like National Braai Day. Ask on the day or call us for
+      what is on the menu.
+    </p>
+  </Section>
+
+  <Faq items={faqs} />
+
+  <CtaBand
+    lines={[{t: 'After your catch,'}, {t: 'unwind with us.', i: true}]}
+    text="Make a day of it: fishing in the morning, lunch by the water and an afternoon on the play areas while the adults relax."
+    image={pic('lapa-deck-fairy-lights')}
+  >
+    <a href="/fishing/" class="btn btn-primary">Fishing at The Duckpond</a>
+    <a href="/venues/" class="btn btn-ghost">Book a venue for a group</a>
+  </CtaBand>
+</Base>

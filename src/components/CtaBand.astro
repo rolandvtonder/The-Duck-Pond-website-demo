@@ -1,0 +1,30 @@
+---
+import type {ImageMetadata} from 'astro';
+import {Image} from 'astro:assets';
+interface Props {
+  lines: {t: string; i?: boolean}[];
+  text: string;
+  image?: {src: ImageMetadata; alt: string};
+}
+const {lines, text, image} = Astro.props;
+---
+
+<section class="on-dark relative overflow-hidden bg-forest py-24 text-white md:py-36">
+  {
+    image && (
+      <>
+        <Image src={image.src} alt="" widths={[800, 1440, 2000]} sizes="100vw" loading="lazy" class="absolute inset-0 h-full w-full object-cover" />
+        <div class="absolute inset-0 bg-forest-deep/80" />
+      </>
+    )
+  }
+  <div class="relative mx-auto max-w-[1680px] px-5 md:px-14" data-reveal>
+    <h2 class="display text-[clamp(44px,6.4vw,116px)]">
+      {lines.map((l, i) => <span class:list={['block', {it: l.i, 'pl-[1.2em]': i === 0}]}>{l.t}</span>)}
+    </h2>
+    <p class="mt-8 max-w-[52ch] text-[18px] text-white/90 md:ml-[clamp(0px,19vw,330px)]">{text}</p>
+    <div class="mt-8 flex flex-wrap gap-3 md:ml-[clamp(0px,19vw,330px)]">
+      <slot />
+    </div>
+  </div>
+</section>

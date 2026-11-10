@@ -1,0 +1,224 @@
+---
+import {getImage, Image} from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Section from '../components/Section.astro';
+import CtaBand from '../components/CtaBand.astro';
+import {site} from '../data/site';
+import {pic, type PhotoName} from '../lib/photos';
+
+const crumbs = [
+  {name: 'Home', href: '/'},
+  {name: 'Gallery', href: '/gallery/'},
+];
+
+const groups: {id: string; label: string; photos: PhotoName[]}[] = [
+  {
+    id: 'events',
+    label: 'Weddings & events',
+    photos: [
+      'garden-wedding-ceremony',
+      'wedding-reception-hall',
+      'bridal-table-floral',
+      'garden-wedding-aisle',
+      'reception-hall-draping-lights',
+      'outdoor-wedding-guests',
+      'draped-function-marquee',
+      'reception-table-setting',
+      'garden-ceremony-red-carpet',
+      'function-hall-tables',
+      'conference-centre-function-tables',
+      'long-table-pond-view',
+    ],
+  },
+  {
+    id: 'parties',
+    label: 'Parties & showers',
+    photos: ['first-birthday-balloon-decor', 'gender-reveal-balloon-wall', 'birthday-celebration-balloons', 'baby-shower-decor-chair'],
+  },
+  {
+    id: 'inn',
+    label: 'The Duckpond Inn',
+    photos: [
+      'inn-room-balcony-view',
+      'inn-queen-room-en-suite',
+      'inn-twin-room',
+      'inn-double-room-green',
+      'inn-double-room',
+      'inn-guest-lounge',
+      'inn-balcony-dining-table',
+      'guests-on-the-balcony',
+      'housekeeping-team',
+    ],
+  },
+  {
+    id: 'pond',
+    label: 'The pond & play',
+    photos: [
+      'sunset-over-the-duck-pond',
+      'ducks-on-the-pond-at-dusk',
+      'sunset-pond-reflection',
+      'white-ducks-on-the-pond',
+      'lapa-deck-fairy-lights',
+      'indoor-play-area-wide',
+      'indoor-play-area',
+      'outdoor-jungle-gym',
+      'outdoor-play-lawn',
+    ],
+  },
+];
+
+// One large WebP per photo for the lightbox.
+const items = await Promise.all(
+  groups.flatMap((g) =>
+    g.photos.map(async (name) => {
+      const p = pic(name);
+      const large = await getImage({src: p.src, width: 1800, format: 'webp'});
+      return {group: g.id, name, ...p, large: large.src};
+    }),
+  ),
+);
+---
+
+<Base
+  title="Photo Gallery | Weddings, Rooms & Sunsets at The Duckpond Ballito"
+  description="See The Duckpond in photos: garden weddings, receptions, birthday parties, rooms at The Duckpond Inn, kids play areas and sunsets over the pond near Ballito."
+  crumbs={crumbs}
+  schema={[
+    {
+      '@context': 'https://schema.org',
+      '@type': 'ImageGallery',
+      name: 'The Duckpond photo gallery',
+      url: `${site.url}/gallery/`,
+      about: {'@id': `${site.url}/#business`},
+    },
+  ]}
+>
+  <PageHero
+    eyebrow="Gallery · Weddings · Parties · The Inn · The pond"
+    lines={[{t: 'Moments'}, {t: 'by the', i: true}, {t: 'water'}]}
+    intro="A look around The Duckpond: celebrations in our venues, rooms at the Inn, the play areas and the pond at its pinkest."
+    images={[pic('sunset-pond-reflection')]}
+    crumbs={crumbs}
+  />
+
+  <Section stacked eyebrow={`${items.length} photos`} lines={[{t: 'Take a'}, {t: 'look around', i: true}]}>
+    <div class="flex flex-wrap gap-2" role="group" aria-label="Filter photos" data-filters>
+      <button type="button" class="btn btn-ghost aria-pressed:bg-ink aria-pressed:text-paper" aria-pressed="true" data-filter="all">All</button>
+      {
+        groups.map((g) => (
+          <button type="button" class="btn btn-ghost aria-pressed:bg-ink aria-pressed:text-paper" aria-pressed="false" data-filter={g.id}>
+            {g.label}
+          </button>
+        ))
+      }
+    </div>
+
+    <ul class="mt-10 columns-1 gap-3 sm:columns-2 lg:columns-3" data-grid>
+      {
+        items.map((it, i) => (
+          <li class="mb-3 break-inside-avoid" data-group={it.group}>
+            <button
+              type="button"
+              class="group block w-full cursor-zoom-in overflow-hidden"
+              data-index={i}
+              data-large={it.large}
+              data-alt={it.alt}
+              aria-label={`Enlarge photo: ${it.alt}`}
+            >
+              <Image
+                src={it.src}
+                alt={it.alt}
+                widths={[400, 700]}
+                sizes="(min-width: 1024px) 31vw, (min-width: 640px) 48vw, 100vw"
+                loading="lazy"
+                class="w-full transition-transform duration-[1200ms] ease-silk group-hover:scale-[1.04]"
+              />
+            </button>
+          </li>
+        ))
+      }
+    </ul>
+  </Section>
+
+  <dialog
+    data-lightbox
+    aria-label="Photo viewer"
+    class="m-0 h-full max-h-none w-full max-w-none bg-ink/95 p-0 text-white backdrop:bg-ink/80"
+  >
+    <div class="flex h-full flex-col">
+      <div class="flex items-center justify-between gap-4 px-4 py-3 md:px-8">
+        <p class="caps text-white/80" data-count aria-live="polite"></p>
+        <button type="button" class="caps min-h-[48px] cursor-pointer px-4 hover:text-sage" data-close>Close ✕</button>
+      </div>
+      <figure class="flex min-h-0 flex-1 flex-col items-center justify-center px-4 pb-4">
+        <img data-img alt="" class="max-h-full min-h-0 max-w-full object-contain" />
+        <figcaption class="mt-3 max-w-[70ch] text-center text-white/80" data-caption></figcaption>
+      </figure>
+      <div class="flex justify-between px-4 pb-6 md:px-8">
+        <button type="button" class="btn btn-ghost" data-prev>← Previous</button>
+        <button type="button" class="btn btn-ghost" data-next>Next →</button>
+      </div>
+    </div>
+  </dialog>
+
+  <CtaBand
+    lines={[{t: 'Picture your'}, {t: 'celebration here', i: true}]}
+    text="Like what you see? Tell us about your event, or follow The Duck Pond on Facebook and Instagram for new photos."
+    image={pic('wedding-reception-hall')}
+  >
+    <a href="/book/" class="btn btn-primary">Book a visit</a>
+    <a href={site.social.facebook} class="btn btn-ghost" rel="noopener" target="_blank">Facebook</a>
+  </CtaBand>
+</Base>
+
+<script>
+  // Filters and a keyboard-friendly lightbox built on <dialog>.
+  const grid = document.querySelector<HTMLElement>('[data-grid]')!;
+  const filters = document.querySelectorAll<HTMLButtonElement>('[data-filter]');
+  filters.forEach((b) =>
+    b.addEventListener('click', () => {
+      const f = b.dataset.filter!;
+      filters.forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+      grid.querySelectorAll<HTMLElement>('li').forEach((li) => (li.hidden = f !== 'all' && li.dataset.group !== f));
+    }),
+  );
+
+  const dlg = document.querySelector<HTMLDialogElement>('[data-lightbox]')!;
+  const img = dlg.querySelector<HTMLImageElement>('[data-img]')!;
+  const cap = dlg.querySelector<HTMLElement>('[data-caption]')!;
+  const count = dlg.querySelector<HTMLElement>('[data-count]')!;
+  let list: HTMLButtonElement[] = [];
+  let at = 0;
+  let opener: HTMLButtonElement | null = null;
+
+  const show = (i: number) => {
+    at = (i + list.length) % list.length;
+    const b = list[at];
+    img.src = b.dataset.large!;
+    img.alt = b.dataset.alt!;
+    cap.textContent = b.dataset.alt!;
+    count.textContent = `${at + 1} / ${list.length}`;
+  };
+
+  grid.querySelectorAll<HTMLButtonElement>('button[data-large]').forEach((b) =>
+    b.addEventListener('click', () => {
+      list = [...grid.querySelectorAll<HTMLButtonElement>('li:not([hidden]) button[data-large]')];
+      opener = b;
+      show(list.indexOf(b));
+      dlg.showModal();
+      window.dispatchEvent(new Event('scroll:stop'));
+    }),
+  );
+  dlg.querySelector('[data-prev]')!.addEventListener('click', () => show(at - 1));
+  dlg.querySelector('[data-next]')!.addEventListener('click', () => show(at + 1));
+  dlg.querySelector('[data-close]')!.addEventListener('click', () => dlg.close());
+  dlg.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft') show(at - 1);
+    if (e.key === 'ArrowRight') show(at + 1);
+  });
+  dlg.addEventListener('close', () => {
+    window.dispatchEvent(new Event('scroll:start'));
+    opener?.focus();
+  });
+</script>

@@ -1,0 +1,31 @@
+---
+import type {ImageMetadata} from 'astro';
+import {Image} from 'astro:assets';
+interface Props {
+  image: {src: ImageMetadata; alt: string};
+  reverse?: boolean;
+  eyebrow?: string;
+  title: string;
+  /** Portrait photos get a taller frame. */
+  portrait?: boolean;
+}
+const {image, reverse = false, eyebrow, title, portrait = false} = Astro.props;
+---
+
+<article class="grid items-center gap-8 md:grid-cols-12 md:gap-14">
+  <div class:list={['md:col-span-6', reverse && 'md:order-2']} data-reveal>
+    <Image
+      src={image.src}
+      alt={image.alt}
+      widths={[480, 800, 1200]}
+      sizes="(min-width: 768px) 46vw, 100vw"
+      loading="lazy"
+      class:list={['w-full object-cover', portrait ? 'aspect-[4/5]' : 'aspect-[4/3]']}
+    />
+  </div>
+  <div class:list={['md:col-span-6', reverse ? 'md:order-1 md:pr-6' : 'md:pl-6']} data-reveal style="--d:0.12s">
+    {eyebrow && <p class="caps text-forest">{eyebrow}</p>}
+    <h3 class="display mt-3 text-[clamp(32px,3.4vw,56px)]">{title}</h3>
+    <div class="copy mt-5"><slot /></div>
+  </div>
+</article>

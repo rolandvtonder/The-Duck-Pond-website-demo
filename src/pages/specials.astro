@@ -1,0 +1,133 @@
+---
+import {Image} from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Section from '../components/Section.astro';
+import VenueTable from '../components/VenueTable.astro';
+import Faq from '../components/Faq.astro';
+import CtaBand from '../components/CtaBand.astro';
+import {contacts, waLink, weekdaySpecial} from '../data/site';
+import {pic} from '../lib/photos';
+import {faqSchema, type Faq as FaqItem} from '../lib/schema';
+
+const crumbs = [
+  {name: 'Home', href: '/'},
+  {name: 'Specials', href: '/specials/'},
+];
+const denny = contacts.find((c) => c.name === 'Denny')!;
+const flyer = pic('flyer-weekday-special');
+
+const faqs: FaqItem[] = [
+  {
+    q: 'What is the Duckpond weekday special?',
+    a: `50% off venue hire ${weekdaySpecial.days.toLowerCase()}, on all eight venues, for dates from ${weekdaySpecial.label}. ${weekdaySpecial.terms}`,
+  },
+  {
+    q: 'Does the special apply on public holidays?',
+    a: 'No. The weekday special does not apply on public holidays.',
+  },
+  {
+    q: 'Are there holiday specials on accommodation?',
+    a: `Yes, The Duckpond Inn runs festive-season rates for the Christmas holidays. Phone or WhatsApp ${denny.name} on ${denny.display} for current rates and availability.`,
+  },
+  {
+    q: 'How do I hear about new specials?',
+    a: 'Follow The Duck Pond on Facebook and Instagram, where we post new specials and events first, or check this page.',
+  },
+];
+---
+
+<Base
+  title="Venue Hire Specials Ballito | 50% Off Weekdays at The Duckpond"
+  description="Current specials at The Duckpond: 50% off all venue hire Monday to Thursday until 30 November 2026, plus festive-season rates at The Duckpond Inn."
+  crumbs={crumbs}
+  schema={[
+    faqSchema(faqs),
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Offer',
+      name: 'Weekday Special: 50% off venue hire',
+      description: `50% off venue hire ${weekdaySpecial.days} at The Duckpond. ${weekdaySpecial.terms}`,
+      validFrom: weekdaySpecial.from,
+      validThrough: weekdaySpecial.to,
+      url: 'https://theduckpond.co.za/specials/',
+      offeredBy: {'@id': 'https://theduckpond.co.za/#business'},
+    },
+  ]}
+>
+  <PageHero
+    eyebrow={`Specials · Weekday venue hire · ${weekdaySpecial.label}`}
+    lines={[{t: 'Why pay more'}, {t: 'on the', i: true}, {t: 'weekend?', i: true}]}
+    intro="Host your birthday, anniversary, corporate event, baby shower or family get-together during the week and enjoy 50% off our venue hire."
+    images={[pic('lapa-deck-fairy-lights')]}
+    crumbs={crumbs}
+  >
+    <a href="/book/?type=venue" class="btn btn-primary">Claim the special</a>
+    <a href="#weekday" class="btn btn-ghost">See the prices</a>
+  </PageHero>
+
+  <div id="special-ended" hidden class="bg-raspberry px-5 py-4 text-center text-white md:px-14">
+    <p>This weekday special has ended. Call {contacts[0].display} or follow us on Facebook for the latest deals.</p>
+  </div>
+  <script is:inline define:vars={{end: weekdaySpecial.to}}>
+    // Static pages can't expire on their own; hide the special after its end date.
+    if (new Date() > new Date(end + 'T23:59:59+02:00')) document.getElementById('special-ended').hidden = false;
+  </script>
+
+  <Section id="weekday" eyebrow={`Weekday special · ${weekdaySpecial.days} only`} lines={[{t: '50% off'}, {t: 'venue hire', i: true}]}>
+    <div class="copy text-[18px]" data-reveal>
+      <p>
+        More value, more memories, same beautiful experience. From <strong>{weekdaySpecial.label}</strong>, every venue at
+        The Duckpond is half price when you book for a Monday, Tuesday, Wednesday or Thursday.
+        That includes the lapas, the Kids Lapa, the Braai Shed, Sam’s Tree Lapa, the Bar Shack, the Island Stage and the
+        Wedding &amp; Conference Centre.
+      </p>
+      <p>
+        Every booking includes seating to the venue’s capacity and a private braai area, and you can bring your own décor
+        and catering. Weekdays are for memories that move you.
+      </p>
+      <p class="text-[15px] text-ink/70">{weekdaySpecial.terms}</p>
+    </div>
+    <div class="mt-12">
+      <VenueTable caption="Weekday special prices (Monday to Thursday) at The Duckpond" />
+    </div>
+  </Section>
+
+  <Section tone="cream" eyebrow="The flyer" lines={[{t: 'Share it with'}, {t: 'the family', i: true}]}>
+    <div class="grid gap-10 lg:grid-cols-2">
+      <Image src={flyer.src} alt={flyer.alt} widths={[480, 800]} sizes="(min-width: 1024px) 28vw, 100vw" loading="lazy" class="w-full shadow-[0_20px_60px_rgb(0_0_0/0.18)]" data-reveal />
+      <div class="copy" data-reveal>
+        <h3>Accommodation over the holidays</h3>
+        <p>
+          The Duckpond Inn has unbeatable nightly rates for the Christmas holidays. Don’t be disappointed: bring your
+          family to relax and enjoy the holidays by the pond.
+        </p>
+        <p>
+          Phone or WhatsApp <a href={`tel:${denny.tel}`}>{denny.name} on {denny.display}</a> for festive rates, or see our
+          <a href="/accommodation/">standard room rates</a>.
+        </p>
+        <p class="mt-6">
+          <a href={waLink('Hi Denny, please send me the Christmas holiday rates for The Duckpond Inn.', denny.wa)} rel="noopener" target="_blank"
+            >Ask Denny on WhatsApp →</a
+          >
+        </p>
+        <h3>Event specials</h3>
+        <p>
+          We run specials for occasions like National Braai Day and Heritage Day, spring and summer celebrations. Follow
+          us on <a href="https://www.facebook.com/theduckpondballito/" rel="noopener" target="_blank">Facebook</a> so you
+          don’t miss the next one.
+        </p>
+      </div>
+    </div>
+  </Section>
+
+  <Faq items={faqs} tone="paper" />
+
+  <CtaBand
+    lines={[{t: 'Weekdays are'}, {t: 'for memories.', i: true}]}
+    text="Pick a Monday to Thursday, choose your venue and send us your request. We will confirm availability and the special price."
+    image={pic('garden-wedding-ceremony')}
+  >
+    <a href="/book/?type=venue" class="btn btn-primary">Request a weekday date</a>
+  </CtaBand>
+</Base>

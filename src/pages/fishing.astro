@@ -1,0 +1,137 @@
+---
+import {Image} from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Section from '../components/Section.astro';
+import Faq from '../components/Faq.astro';
+import CtaBand from '../components/CtaBand.astro';
+import {contacts, fishing, hours, rand} from '../data/site';
+import {pic} from '../lib/photos';
+import {faqSchema, type Faq as FaqItem} from '../lib/schema';
+
+const crumbs = [
+  {name: 'Home', href: '/'},
+  {name: 'Fishing', href: '/fishing/'},
+];
+
+const fish = [
+  {name: 'Tilapia', text: 'The pond’s regulars. A good fight on light tackle and a favourite with first-time anglers.'},
+  {name: 'Koi', text: 'Flashes of orange, white and black under the surface. Beautiful to spot and to land.'},
+  {name: 'Largemouth bass', text: 'The odd old largemouth bass lives here too. We don’t promise, but he’s there.'},
+];
+
+const after = [
+  {t: 'Restaurant', d: 'Good food, great views.', href: '/restaurant/'},
+  {t: 'Car wash', d: 'Clean cars, happy drivers.', href: '/on-site-businesses/#car-wash'},
+  {t: 'Venue hire', d: 'Birthdays, functions, weddings & more.', href: '/venues/'},
+  {t: 'Accommodation', d: 'Stay over, relax, enjoy.', href: '/accommodation/'},
+];
+
+const faqs: FaqItem[] = [
+  {q: 'How much does fishing cost at The Duckpond?', a: `Fishing is ${rand(fishing.price)} ${fishing.unit} entry.`},
+  {q: 'What fish are in the pond?', a: 'The pond holds tilapia, koi and the odd old largemouth bass.'},
+  {
+    q: 'Why is the water brown?',
+    a: 'After good rains the pond can look like chocolate. It is still full of fish, so don’t let the colour put you off.',
+  },
+  {q: 'Do I need my own rod?', a: `Yes, please bring your own rod and tackle. Entry is ${rand(fishing.price)} per rod.`},
+  {
+    q: 'When can I fish?',
+    a: `You are welcome during our hours: ${hours.map((h) => `${h.days} ${h.time}`).join(', ')}. For groups or fishing days with a venue booking, call ${contacts[0].name} on ${contacts[0].display}.`,
+  },
+  {
+    q: 'Is fishing good for children?',
+    a: 'Yes. Fishing at The Duckpond is a family outing. Please keep an eye on young children near the water, and when they are done, the play areas are close by.',
+  },
+];
+---
+
+<Base
+  title="Fishing near Ballito | R40 a Rod at The Duckpond, R102"
+  description="Go fishing at The Duckpond between Ballito and Tongaat. R40 per rod for tilapia, koi and the odd largemouth bass, with a restaurant, venues and rooms on site."
+  crumbs={crumbs}
+  schema={[faqSchema(faqs)]}
+>
+  <PageHero
+    eyebrow="Fishing at The Duckpond · Ballito & Tongaat"
+    lines={[{t: 'Yes,'}, {t: 'there are', i: true}, {t: 'fish.'}]}
+    intro={`It’s not just chocolate, it’s liquid opportunity. Cast a line for tilapia, koi and the odd old largemouth bass for only ${rand(fishing.price)} per rod.`}
+    images={[pic('ducks-on-the-pond-at-dusk')]}
+    crumbs={crumbs}
+  >
+    <a href="/book/?type=other&topic=fishing" class="btn btn-primary">Plan a fishing day</a>
+    <a href="#species" class="btn btn-ghost">What’s biting</a>
+  </PageHero>
+
+  <Section eyebrow="Family fishing on the North Coast" lines={[{t: 'Only'}, {t: `${rand(fishing.price)} per rod`, i: true}]}>
+    <div class="copy text-[18px]" data-reveal>
+      <p>
+        Looking for somewhere to fish near Ballito? The duck pond at The Duckpond is stocked with life, and a day on the
+        bank costs just {rand(fishing.price)} per rod. It is relaxed, affordable fishing on the R102 between Ballito and
+        Tongaat: no boat, no long drive, just a rod, a bit of bait and some patience.
+      </p>
+      <p>
+        Yes, after the rains the water can look like chocolate. We still have fish. Tilapia make up most of the catch,
+        colourful koi glide beneath the surface, and somewhere out there lives the odd old largemouth bass. We don’t
+        promise, but he’s here.
+      </p>
+      <p>
+        It is the kind of fishing the whole family can enjoy. Bring the kids, bring a cooler box, and when you have had
+        enough, the restaurant, lapas and play areas are just a few steps away.
+      </p>
+    </div>
+  </Section>
+
+  <Section id="species" tone="cream" stacked eyebrow="What’s in the pond" lines={[{t: 'Tilapia, koi'}, {t: '& the odd bass', i: true}]}>
+    <ul class="grid gap-x-10 gap-y-12 md:grid-cols-3">
+      {
+        fish.map((f, i) => (
+          <li class="border-t border-ink/25 pt-6" data-reveal style={`--d:${i * 0.08}s`}>
+            <p class="caps text-forest">0{i + 1}</p>
+            <h3 class="display mt-2 text-[40px]">{f.name}</h3>
+            <p class="mt-3 text-ink/80">{f.text}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </Section>
+
+  <Section eyebrow="On the bank" lines={[{t: 'Sunrise to'}, {t: 'sunset', i: true}]}>
+    <div class="grid gap-4 sm:grid-cols-2" data-reveal>
+      <Image src={pic('white-ducks-on-the-pond').src} alt={pic('white-ducks-on-the-pond').alt} widths={[400, 800]} sizes="(min-width: 768px) 28vw, 100vw" loading="lazy" class="aspect-[4/5] w-full object-cover" />
+      <Image src={pic('sunset-pond-reflection').src} alt={pic('sunset-pond-reflection').alt} widths={[400, 800]} sizes="(min-width: 768px) 28vw, 100vw" loading="lazy" class="aspect-[4/5] w-full object-cover sm:mt-16" />
+    </div>
+    <div class="copy mt-10 text-[18px]" data-reveal>
+      <p>
+        Mornings are calm, with the ducks making their rounds across the water. In the evening the pond turns pink and
+        gold as the sun goes down behind the lapas. Pick your spot along the bank and settle in.
+      </p>
+    </div>
+  </Section>
+
+  <Section tone="ink" stacked eyebrow="After your catch" lines={[{t: 'Unwind'}, {t: 'with us', i: true}]}>
+    <ul class="grid gap-x-10 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
+      {
+        after.map((a, i) => (
+          <li data-reveal style={`--d:${i * 0.06}s`}>
+            <a href={a.href} class="group block border-t border-white/25 pt-5">
+              <h3 class="display text-[32px] group-hover:text-sage">{a.t}</h3>
+              <p class="mt-2 text-white/75">{a.d}</p>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </Section>
+
+  <Faq items={faqs} />
+
+  <CtaBand
+    lines={[{t: 'Fishing, food,'}, {t: 'fun…', i: true}, {t: 'all at The Duckpond'}]}
+    text="Planning a fishing day for a group, a club or a birthday? Let us know and we can pair it with a lapa and braai area."
+    image={pic('sunset-over-the-duck-pond')}
+  >
+    <a href="/book/?type=other&topic=fishing" class="btn btn-primary">Send an enquiry</a>
+    <a href={`tel:${contacts[0].tel}`} class="btn btn-ghost">Call {contacts[0].display}</a>
+  </CtaBand>
+</Base>

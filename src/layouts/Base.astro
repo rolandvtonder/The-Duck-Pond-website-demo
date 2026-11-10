@@ -1,0 +1,112 @@
+---
+import '../styles/global.css';
+import {Image} from 'astro:assets';
+import Menu from '../components/Menu.astro';
+import Footer from '../components/Footer.astro';
+import logoMark from '../assets/brand/logo-mark.png';
+import {site} from '../data/site';
+import {breadcrumbSchema, businessSchema} from '../lib/schema';
+
+interface Props {
+  /** Full <title>; keep it under ~60 characters with the main keyword first. */
+  title: string;
+  /** Meta description, ~150–160 characters. */
+  description: string;
+  /** Absolute path of the share image (defaults to /og-image.jpg). */
+  image?: string;
+  crumbs?: {name: string; href: string}[];
+  schema?: object[];
+  noindex?: boolean;
+}
+
+const {title, description, image = '/og-image.jpg', crumbs, schema = [], noindex = false} = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const ogImage = new URL(image, Astro.site).href;
+const jsonld = [businessSchema(), ...(crumbs ? [breadcrumbSchema(crumbs)] : []), ...schema];
+---
+
+<!doctype html>
+<html lang="en-ZA">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script is:inline>document.documentElement.classList.add('js');</script>
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex, follow" />}
+    <meta name="theme-color" content="#12140f" />
+    <meta name="geo.region" content="ZA-KZN" />
+    <meta name="geo.placename" content="Ballito" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:locale" content="en_ZA" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Condensed:ital,wght@0,400..700;1,400..700&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <slot name="head" />
+    {jsonld.map((j) => <script type="application/ld+json" set:html={JSON.stringify(j)} />)}
+  </head>
+  <body>
+    <a href="#main" class="caps sr-only z-[70] bg-paper px-4 py-3 text-ink focus:not-sr-only focus:fixed focus:top-3 focus:left-3">
+      Skip to content
+    </a>
+
+    <a
+      href="/"
+      class="fixed top-4 left-4 z-[55] flex items-center gap-2.5 text-white mix-blend-difference md:top-6 md:left-10"
+      aria-label="The Duckpond home"
+    >
+      <Image src={logoMark} alt="" width={44} height={42} class="h-[38px] w-auto md:h-[44px]" loading="eager" />
+      <span class="display text-[17px] tracking-[0.2em] md:text-[21px]">The Duckpond</span>
+    </a>
+
+    <button
+      type="button"
+      data-menu-toggle
+      aria-expanded="false"
+      aria-controls="site-menu"
+      class="caps fixed top-4 right-4 z-[55] flex min-h-[48px] cursor-pointer items-center gap-4 bg-ink/75 px-6 text-white backdrop-blur-md transition-colors duration-500 hover:bg-ink [&.is-open]:bg-white [&.is-open]:text-ink md:top-6 md:right-8"
+    >
+      <span data-menu-label>Menu</span>
+      <span data-menu-plus aria-hidden="true" class="text-[18px] leading-none transition-transform duration-500 ease-silk">+</span>
+    </button>
+
+    <a
+      href="/book/"
+      class="btn btn-primary fixed right-4 bottom-4 z-[55] shadow-[0_8px_30px_rgb(0_0_0/0.25)] md:right-8 md:bottom-7"
+    >
+      Book <em class="normal-case">your visit</em>
+    </a>
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <Footer />
+    <Menu />
+    <div class="grain" aria-hidden="true"></div>
+
+    <script>
+      import '../scripts/site.ts';
+    </script>
+  </body>
+</html>

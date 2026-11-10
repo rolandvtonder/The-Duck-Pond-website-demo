@@ -1,0 +1,38 @@
+---
+import type {Faq} from '../lib/schema';
+interface Props {
+  items: Faq[];
+  /** Two heading lines; the second is italic. */
+  lines?: [string, string];
+  tone?: 'paper' | 'cream';
+}
+const {items, lines = ['Questions &', 'answers'], tone = 'cream'} = Astro.props;
+---
+
+<!-- FAQ: native <details> so it works without JS; the same Q&As feed FAQPage schema. -->
+<section class:list={[tone === 'cream' ? 'bg-cream' : 'bg-paper', 'py-20 md:py-28']} aria-labelledby="faq-title">
+  <div class="mx-auto grid max-w-[1680px] gap-10 px-5 md:grid-cols-12 md:px-14">
+    <header class="md:col-span-4" data-reveal>
+      <p class="caps text-forest">Good to know</p>
+      <h2 id="faq-title" class="display mt-4 text-[clamp(38px,4.4vw,72px)]">
+        <span class="block">{lines[0]}</span>
+        <span class="it block">{lines[1]}</span>
+      </h2>
+    </header>
+    <div class="md:col-span-8">
+      {
+        items.map((f) => (
+          <details class="group border-t border-ink/20 last:border-b">
+            <summary class="flex min-h-[56px] cursor-pointer list-none items-center justify-between gap-6 py-5 text-[19px] [&::-webkit-details-marker]:hidden">
+              <h3>{f.q}</h3>
+              <span aria-hidden="true" class="text-2xl leading-none transition-transform duration-500 ease-silk group-open:rotate-45">
+                +
+              </span>
+            </summary>
+            <p class="copy pb-6 text-ink/80">{f.a}</p>
+          </details>
+        ))
+      }
+    </div>
+  </div>
+</section>

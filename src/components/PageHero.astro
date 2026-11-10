@@ -1,0 +1,87 @@
+---
+import type {ImageMetadata} from 'astro';
+import {Image} from 'astro:assets';
+
+interface Props {
+  /** Headline lines; `i` lines are set in italic. Pass 1 photo (slow drift) or 3 (crossfade). */
+  lines: {t: string; i?: boolean}[];
+  /** Keyword line above the headline (what + where). */
+  eyebrow: string;
+  intro: string;
+  images: {src: ImageMetadata; alt: string}[];
+  crumbs?: {name: string; href: string}[];
+  full?: boolean;
+}
+
+const {lines, eyebrow, intro, images, crumbs, full = false} = Astro.props;
+const total = images.length * 7;
+---
+
+<!-- Photo (or slow crossfade of photos) under a big condensed serif headline.
+     As you scroll on, the stage blurs, dims and shrinks back. -->
+<section
+  data-hero
+  class:list={['on-dark relative overflow-hidden bg-ink text-white', full ? 'h-svh min-h-[640px]' : 'h-[86svh] min-h-[600px]']}
+>
+  <div data-hero-stage class="absolute inset-0 origin-center will-change-transform">
+    <div class="absolute inset-0 overflow-hidden">
+      {
+        images.map((img, i) => (
+          <Image
+            src={img.src}
+            alt={i === 0 ? img.alt : ''}
+            aria-hidden={i === 0 ? undefined : 'true'}
+            widths={[640, 1024, 1440, 2000]}
+            sizes="100vw"
+            loading={i === 0 ? 'eager' : 'lazy'}
+            fetchpriority={i === 0 ? 'high' : undefined}
+            class:list={[images.length > 1 ? 'kb' : 'kb-single']}
+            style={images.length > 1 ? `--kb-total:${total}s; --kb-delay:${i === 0 ? -(total * 0.05).toFixed(2) : i * 7}s` : undefined}
+          />
+        ))
+      }
+    </div>
+    <div class="absolute inset-0 bg-[linear-gradient(90deg,rgb(18_20_15/0.62),rgb(18_20_15/0.15)_60%,transparent)]"></div>
+    <div class="absolute inset-0 bg-[linear-gradient(180deg,rgb(18_20_15/0.45),transparent_30%,transparent_70%,rgb(18_20_15/0.55))]"></div>
+
+    <div class="absolute inset-0 mx-auto flex max-w-[1680px] flex-col px-5 pt-[clamp(104px,15vh,150px)] md:px-14">
+      <p class="caps text-white/90">{eyebrow}</p>
+      <h1 class="display mt-5 text-[clamp(46px,7.4vw,136px)] drop-shadow-[0_4px_30px_rgb(0_0_0/0.35)]">
+        {
+          lines.map((l, i) => (
+            <span class:list={['block', {it: l.i, 'pl-[1.2em] md:pl-[1.6em]': i === 0}]}>{l.t}</span>
+          ))
+        }
+      </h1>
+      <p class="mt-8 max-w-[440px] text-[17px] leading-relaxed text-white/90 md:ml-[clamp(0px,19vw,330px)] md:text-[18px]">
+        {intro}
+      </p>
+      <div class="mt-7 flex flex-wrap gap-3 md:ml-[clamp(0px,19vw,330px)]">
+        <slot />
+      </div>
+    </div>
+  </div>
+
+  {
+    crumbs && crumbs.length > 1 && (
+      <nav aria-label="Breadcrumb" class="absolute bottom-5 left-5 z-10 md:bottom-8 md:left-14">
+        <ol class="caps flex flex-wrap gap-2 text-white/80">
+          {crumbs.map((c, i) => (
+            <li class="flex items-center gap-2">
+              {i > 0 && <span aria-hidden="true">/</span>}
+              {i < crumbs.length - 1 ? (
+                <a href={c.href} class="hover:text-white">
+                  {c.name}
+                </a>
+              ) : (
+                <span aria-current="page" class="text-white">
+                  {c.name}
+                </span>
+              )}
+            </li>
+          ))}
+        </ol>
+      </nav>
+    )
+  }
+</section>

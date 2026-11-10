@@ -1,0 +1,79 @@
+---
+import {contacts, nav, site} from '../data/site';
+const path = Astro.url.pathname;
+---
+
+<!-- Three slabs wipe in from the right one after another (ink, sage, paper);
+     the paper one stays and holds the links. Closed: inert and hidden. -->
+<div id="site-menu" data-menu inert aria-hidden="true" class="pointer-events-none fixed inset-0 z-50">
+  <svg class="absolute size-0" aria-hidden="true">
+    <filter id="ripple" x="-5%" y="-30%" width="110%" height="160%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.012 0.06" numOctaves="2" seed="2" result="n"></feTurbulence>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="0" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap>
+    </filter>
+  </svg>
+
+  <!-- Click-away -->
+  <button type="button" data-menu-toggle aria-label="Close menu" tabindex="-1" class="absolute inset-0 cursor-default bg-ink/0"></button>
+
+  <div class="slab bg-ink" style="transition-delay: var(--d0)"></div>
+  <div class="slab bg-sage" style="transition-delay: var(--d1)"></div>
+  <nav
+    class="slab flex flex-col justify-between overflow-y-auto bg-paper px-8 pt-24 pb-24 text-ink md:pb-10"
+    style="transition-delay: var(--d2)"
+    aria-label="Main menu"
+    data-lenis-prevent
+  >
+    <ul class="menu-list">
+      {
+        nav.map((item, i) => (
+          <li class="menu-item" style={`transition-delay: calc(var(--items) + ${i * 0.045}s)`}>
+            <a
+              href={item.href}
+              class="menu-link display relative inline-block py-1 text-[clamp(26px,2.5vw,38px)] transition-opacity duration-300"
+              aria-current={path === item.href ? 'page' : undefined}
+            >
+              {item.label}
+              <sup class="caps absolute top-1 -right-7 text-[10px] tracking-normal text-ink/50">{String(i + 1).padStart(2, '0')}</sup>
+              {path === item.href && <span class="absolute -left-4 top-1/2 size-1.5 -translate-y-1/2 rounded-full bg-raspberry" aria-hidden="true" />}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    <div class="menu-item mt-10" style="transition-delay: var(--foot)">
+      <p class="caps text-ink/60">Bookings</p>
+      <p class="mt-1">
+        <a href={`tel:${contacts[0].tel}`} class="hover:text-raspberry">{contacts[0].display}</a>
+        <span class="text-ink/40"> · </span>
+        <a href={`mailto:${site.email.bookings}`} class="break-all hover:text-raspberry">{site.email.bookings}</a>
+      </p>
+      <div class="mt-4 flex gap-6">
+        <a href={site.social.facebook} class="caps text-ink/80 hover:text-raspberry" rel="noopener" target="_blank">Facebook</a>
+        <a href={site.social.instagram} class="caps text-ink/80 hover:text-raspberry" rel="noopener" target="_blank">Instagram</a>
+        <a href={`https://wa.me/${site.phone.whatsapp}`} class="caps text-ink/80 hover:text-raspberry" rel="noopener" target="_blank">WhatsApp</a>
+      </div>
+    </div>
+  </nav>
+</div>
+
+<style>
+  /* Open: ink → sage → paper, staggered. Close: the reverse, faster. */
+  [data-menu] {
+    --d0: 0.12s;
+    --d1: 0.06s;
+    --d2: 0s;
+    --items: 0s;
+    --foot: 0s;
+  }
+  [data-menu][data-open] {
+    --d0: 0s;
+    --d1: 0.09s;
+    --d2: 0.18s;
+    --items: 0.42s;
+    --foot: 0.8s;
+  }
+  [data-menu]:not([data-open]) .menu-item {
+    transition-delay: 0s !important;
+  }
+</style>

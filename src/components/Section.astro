@@ -1,0 +1,33 @@
+---
+interface Props {
+  id?: string;
+  eyebrow?: string;
+  /** Heading lines; `i` lines are italic. Rendered as an h2. */
+  lines?: {t: string; i?: boolean}[];
+  tone?: 'paper' | 'cream' | 'ink' | 'forest';
+  /** Stack heading above content instead of side by side. */
+  stacked?: boolean;
+  class?: string;
+}
+const {id, eyebrow, lines, tone = 'paper', stacked = false, class: extra} = Astro.props;
+const dark = tone === 'ink' || tone === 'forest';
+const bg = {paper: 'bg-paper', cream: 'bg-cream', ink: 'bg-ink', forest: 'bg-forest'}[tone];
+---
+
+<section id={id} class:list={[bg, dark ? 'on-dark text-white' : 'text-ink', 'py-20 md:py-32', extra]}>
+  <div class:list={['mx-auto max-w-[1680px] px-5 md:px-14', stacked ? '' : 'grid gap-10 md:grid-cols-12 md:gap-14']}>
+    {
+      lines && (
+        <header class:list={[stacked ? 'mb-12 md:mb-16' : 'md:col-span-5']} data-reveal>
+          {eyebrow && <p class:list={['caps', dark ? 'text-white/75' : 'text-forest']}>{eyebrow}</p>}
+          <h2 class="display mt-4 text-[clamp(40px,5vw,84px)]">
+            {lines.map((l) => <span class:list={['block', {it: l.i}]}>{l.t}</span>)}
+          </h2>
+        </header>
+      )
+    }
+    <div class:list={[stacked ? '' : lines ? 'md:col-span-7 md:pt-10' : 'md:col-span-12']}>
+      <slot />
+    </div>
+  </div>
+</section>

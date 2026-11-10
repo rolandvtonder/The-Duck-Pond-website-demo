@@ -1,0 +1,149 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Section from '../components/Section.astro';
+import Feature from '../components/Feature.astro';
+import Faq from '../components/Faq.astro';
+import {carWash, site, waLink} from '../data/site';
+import {pic} from '../lib/photos';
+import {faqSchema, type Faq as FaqItem} from '../lib/schema';
+
+const crumbs = [
+  {name: 'Home', href: '/'},
+  {name: 'On-site businesses', href: '/on-site-businesses/'},
+];
+
+const kzn = {
+  tel: {display: '032 437 8127', href: '+27324378127'},
+  wa: {display: '079 551 2360', num: '27795512360'},
+  email: 'info@kznsafetyandgear.co.za',
+  web: 'https://www.kznsafetyandgear.co.za',
+  instagram: 'https://www.instagram.com/kznsafetyandgear/',
+};
+const curry = {display: '072 824 6791', tel: '+27728246791'};
+
+const faqs: FaqItem[] = [
+  {q: 'How much is a car wash at The Duckpond?', a: `A Wash & Go is R50 for a car and R60 for an SUV or bakkie. A Full House is R80 for a car and R100 for an SUV or bakkie. Vacuum only is R70.`},
+  {q: 'Do you wash trucks and horse boxes?', a: 'Yes. Horse boxes and truck engines are R250, trucks of 4 ton and below R300, trucks above 4 ton R400, and a truck and trailer R800.'},
+  {q: 'Where is KZN Safety and Gear?', a: `KZN Safety and Gear is at Shop 5, R102, Greylands, Ballito, at The Duck Pond. Call ${kzn.tel.display} or WhatsApp ${kzn.wa.display}.`},
+  {q: 'What does KZN Safety and Gear sell?', a: 'Safety wear, gas and welding equipment, lubricants, chemicals, petroleum products, bearings and seals, chains and sprockets, promotional items and corporate workwear.'},
+];
+---
+
+<Base
+  title="Car Wash & Businesses at The Duck Pond, R102 Ballito"
+  description="Businesses at The Duck Pond on the R102: Duckpond Car Wash from R50, KZN Safety and Gear, Curry Corner, The Sitting Duck and the Shisa Nyama, between Ballito and Tongaat."
+  crumbs={crumbs}
+  schema={[
+    faqSchema(faqs),
+    {
+      '@context': 'https://schema.org',
+      '@type': 'AutoWash',
+      name: 'Duckpond Car Wash',
+      telephone: carWash.phone.tel,
+      url: `${site.url}/on-site-businesses/#car-wash`,
+      containedInPlace: {'@id': `${site.url}/#business`},
+      priceRange: 'R50 – R800',
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Store',
+      name: 'KZN Safety and Gear',
+      telephone: kzn.tel.href,
+      email: kzn.email,
+      url: kzn.web,
+      address: {'@type': 'PostalAddress', streetAddress: 'Shop 5, R102, Greylands', addressLocality: 'Ballito', addressRegion: 'KwaZulu-Natal', addressCountry: 'ZA'},
+      containedInPlace: {'@id': `${site.url}/#business`},
+    },
+  ]}
+>
+  <PageHero
+    eyebrow="On-site businesses · The Duck Pond on the R102"
+    lines={[{t: 'More than'}, {t: 'a pond', i: true}]}
+    intro="While you are here, wash the car, pick up safety gear or grab a curry. These businesses share The Duck Pond property on the R102."
+    images={[pic('kzn-safety-and-gear-store')]}
+    crumbs={crumbs}
+  >
+    <a href="#car-wash" class="btn btn-primary">Car wash prices</a>
+    <a href="#kzn-safety" class="btn btn-ghost">KZN Safety & Gear</a>
+  </PageHero>
+
+  <Section id="car-wash" eyebrow="Duckpond Car Wash" lines={[{t: 'Clean cars,'}, {t: 'happy drivers', i: true}]}>
+    <div class="copy text-[18px]" data-reveal>
+      <p>
+        Leave the car at the Duckpond Car Wash while you fish, eat or let the kids play, and drive home spotless. We wash
+        everything from hatchbacks to bakkies, horse boxes and trucks.
+      </p>
+    </div>
+    <div class="mt-10 overflow-x-auto" data-reveal>
+      <table class="w-full min-w-[420px] border-collapse text-left tabular-nums">
+        <caption class="caps mb-4 text-left text-ink/70">Duckpond Car Wash prices</caption>
+        <thead>
+          <tr class="caps border-b border-ink text-ink/80">
+            <th scope="col" class="py-3 pr-4 font-normal">Service</th>
+            <th scope="col" class="py-3 pr-4 text-right font-normal">Car</th>
+            <th scope="col" class="py-3 text-right font-normal">SUV / bakkie</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            carWash.prices.map((p) => (
+              <tr class="border-b border-ink/15">
+                <th scope="row" class="display py-3 pr-4 text-[22px] font-normal">{p.item}</th>
+                <td class="py-3 pr-4 text-right">{p.car}</td>
+                <td class="py-3 text-right">{p.suv}</td>
+              </tr>
+            ))
+          }
+          {
+            carWash.large.map((p) => (
+              <tr class="border-b border-ink/15">
+                <th scope="row" class="display py-3 pr-4 text-[22px] font-normal">{p.item}</th>
+                <td class="py-3 text-right" colspan="2">{p.price}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+      <p class="mt-6">
+        <a href={`tel:${carWash.phone.tel}`} class="btn btn-forest">Call {carWash.phone.display}</a>
+        <a href={waLink('Hi, I would like to book a car wash at The Duckpond.', carWash.phone.wa)} class="btn btn-ghost ml-2 mt-2" rel="noopener" target="_blank">WhatsApp</a>
+      </p>
+    </div>
+  </Section>
+
+  <Section id="kzn-safety" tone="cream" stacked eyebrow="Shop 5 · R102 · Greylands" lines={[{t: 'KZN Safety'}, {t: '& Gear', i: true}]}>
+    <Feature image={pic('kzn-safety-and-gear-sign')} title="Your local safety supplier">
+      <p>
+        KZN Safety and Gear is the North Coast’s local supplier of safety wear, gas and welding equipment, lubricants,
+        chemicals, petroleum products, bearings and seals, chains and sprockets, promotional items and corporate workwear,
+        stocking well-known industrial brands.
+      </p>
+      <ul>
+        <li>Tel: <a href={`tel:${kzn.tel.href}`}>{kzn.tel.display}</a></li>
+        <li>WhatsApp: <a href={`https://wa.me/${kzn.wa.num}`} rel="noopener" target="_blank">{kzn.wa.display}</a></li>
+        <li>Email: <a href={`mailto:${kzn.email}`}>{kzn.email}</a></li>
+        <li>Online store: <a href={kzn.web} rel="noopener" target="_blank">kznsafetyandgear.co.za</a></li>
+      </ul>
+    </Feature>
+  </Section>
+
+  <Section stacked eyebrow="Food on site" lines={[{t: 'Curry Corner, Shisa Nyama'}, {t: '& The Sitting Duck', i: true}]}>
+    <div class="space-y-24 md:space-y-32">
+      <Feature image={pic('curry-corner-sign')} eyebrow="Curry Corner" title="Authentic Indian flavours">
+        <p>
+          Spice up your life at Curry Corner, where affordability meets excellence: traditional Indian cuisine and wors
+          rolls. Call <a href={`tel:${curry.tel}`}>{curry.display}</a>.
+        </p>
+      </Feature>
+      <Feature image={pic('sitting-duck-shisa-nyama-car-wash-sign')} portrait reverse eyebrow="Shisa Nyama & The Sitting Duck" title="Braai & coffee">
+        <p>
+          Braaied meat off the coals at the Shisa Nyama, and coffee at The Sitting Duck, both part of The Duckpond on the
+          R102. See <a href="/restaurant/">Restaurant &amp; food</a> for more.
+        </p>
+      </Feature>
+    </div>
+  </Section>
+
+  <Faq items={faqs} />
+</Base>

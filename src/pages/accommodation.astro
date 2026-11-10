@@ -1,0 +1,180 @@
+---
+import {Image} from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Section from '../components/Section.astro';
+import Feature from '../components/Feature.astro';
+import Faq from '../components/Faq.astro';
+import CtaBand from '../components/CtaBand.astro';
+import {contacts, rand, rooms, site, waLink} from '../data/site';
+import {pic} from '../lib/photos';
+import {faqSchema, roomsSchema, type Faq as FaqItem} from '../lib/schema';
+
+const crumbs = [
+  {name: 'Home', href: '/'},
+  {name: 'Accommodation', href: '/accommodation/'},
+];
+const denny = contacts.find((c) => c.name === 'Denny')!;
+
+const roomPhotos = {
+  single: pic('inn-double-room-green'),
+  sharing: pic('inn-twin-room'),
+  family: pic('inn-queen-room-en-suite'),
+  'six-sleeper': pic('inn-room-balcony-view'),
+} as const;
+
+const faqs: FaqItem[] = [
+  {
+    q: 'How much does a room at The Duckpond Inn cost?',
+    a: `Rates per night are ${rooms.map((r) => `${r.name.toLowerCase()} (${r.sleeps}) ${rand(r.price)}`).join(', ')}.`,
+  },
+  {
+    q: 'How do I book accommodation?',
+    a: `Send a booking request on our Book page, WhatsApp or call ${denny.name} on ${denny.display}, or email ${site.email.accommodation}. We will confirm availability and send you the details to secure your booking.`,
+  },
+  {
+    q: 'Is the Inn suitable for families with children?',
+    a: 'Yes. The family room sleeps 4 adults and 2 children, and the 6 Sleeper suits larger families and groups. Children can enjoy the indoor and outdoor play areas and the duck pond during your stay.',
+  },
+  {
+    q: 'Can wedding guests stay over?',
+    a: 'Yes. Many couples book rooms for the wedding party and family so nobody has to drive home after the celebration. Mention your event when you send your request and we will do our best to keep rooms together.',
+  },
+  {
+    q: 'Is the Inn good for business travellers?',
+    a: 'Yes. The Duckpond Inn is on the R102 between Ballito and Tongaat, convenient for work on the North Coast and for King Shaka International Airport. The single room is a quiet, affordable choice for business trips.',
+  },
+  {
+    q: 'What else is there to do during my stay?',
+    a: 'You can fish in the pond (R40 per rod), eat at the restaurant and food stalls on site, let the children play in the indoor and outdoor play areas, and enjoy sunsets over the water from the lapas and balconies.',
+  },
+];
+---
+
+<Base
+  title="Accommodation Ballito & Tongaat | The Duckpond Inn, Rooms from R675"
+  description="Stay at The Duckpond Inn on the R102 between Ballito and Tongaat. Single, sharing, family rooms and 6-sleepers from R675 a night, with pond views and kids play areas."
+  crumbs={crumbs}
+  schema={[roomsSchema(), faqSchema(faqs)]}
+>
+  <PageHero
+    eyebrow="The Duckpond Inn · Accommodation between Ballito & Tongaat"
+    lines={[{t: 'Relax,'}, {t: 'unwind &', i: true}, {t: 'make memories'}]}
+    intro="Comfortable rooms in a peaceful farm setting on the KZN North Coast. Wake up to the countryside, walk down to the pond and let the children play while you slow down."
+    images={[pic('inn-room-balcony-view')]}
+    crumbs={crumbs}
+  >
+    <a href="/book/?type=accommodation" class="btn btn-primary">Request a room</a>
+    <a href="#rates" class="btn btn-ghost">See rates</a>
+  </PageHero>
+
+  <Section eyebrow="Stay at The Duckpond Inn" lines={[{t: 'Your home'}, {t: 'on the', i: true}, {t: 'North Coast'}]}>
+    <div class="copy text-[18px]" data-reveal>
+      <p>
+        The Duckpond Inn is our on-site guest accommodation, right next to the venues, restaurant and duck pond. It is
+        perfect for weddings, birthdays, family getaways and business trips: a quiet, affordable place to stay between
+        Ballito and Tongaat, with the green hills of the North Coast all around.
+      </p>
+      <p>
+        Rooms are neat, bright and comfortable, with fresh white linen, plump cushions and folded towels waiting on the
+        bed. Some rooms open onto balconies with views over the countryside, and the guest lounge and balcony dining table
+        are lovely spots for morning coffee or a sundowner.
+      </p>
+      <p>
+        Because everything is on one property, the Inn makes celebrations easy. Book the venue for the party and rooms
+        for the family, so nobody needs to drive home after the last dance.
+      </p>
+    </div>
+  </Section>
+
+  <Section id="rates" tone="cream" stacked eyebrow="Rates per night" lines={[{t: 'Choose'}, {t: 'your room', i: true}]}>
+    <ul class="grid gap-x-6 gap-y-14 sm:grid-cols-2 lg:grid-cols-4">
+      {
+        rooms.map((r, i) => (
+          <li class="flex flex-col" data-reveal style={`--d:${i * 0.06}s`}>
+            <Image
+              src={roomPhotos[r.id as keyof typeof roomPhotos].src}
+              alt={roomPhotos[r.id as keyof typeof roomPhotos].alt}
+              widths={[400, 700]}
+              sizes="(min-width: 1024px) 24vw, (min-width: 640px) 48vw, 100vw"
+              loading="lazy"
+              class="aspect-[4/5] w-full object-cover"
+            />
+            <h3 class="display mt-5 text-[32px]">{r.name}</h3>
+            <p class="caps mt-1 text-forest">Sleeps {r.sleeps}</p>
+            <p class="mt-3 flex-1 text-ink/75">{r.note}</p>
+            <p class="mt-4 flex items-baseline gap-2 border-t border-ink/20 pt-4">
+              <span class="display text-[40px] tabular-nums">{rand(r.price)}</span>
+              <span class="caps text-ink/70">per night</span>
+            </p>
+            <a href={`/book/?type=accommodation&room=${r.id}`} class="btn btn-forest mt-4">
+              Request <span class="sr-only">{r.name}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    <p class="mt-10 max-w-[70ch] text-[15px] text-ink/70" data-reveal>
+      Rates are per room, per night, as advertised by The Duckpond Inn. Prices are subject to change and availability; we
+      confirm your final rate when we reply to your request. Ask about holiday rates for the festive season.
+    </p>
+  </Section>
+
+  <Section stacked eyebrow="Inside the Inn" lines={[{t: 'Simple comfort,'}, {t: 'countryside views', i: true}]}>
+    <div class="space-y-24 md:space-y-32">
+      <Feature image={pic('inn-queen-room-en-suite')} portrait eyebrow="Rooms" title="Fresh linen & quiet nights">
+        <p>
+          Our rooms are dressed in crisp white linen with soft throws and scatter cushions, with an en-suite bathroom,
+          vanity mirror and space to unpack. Twin and double layouts are available, and family rooms keep everyone
+          together.
+        </p>
+      </Feature>
+      <Feature image={pic('inn-guest-lounge')} portrait reverse eyebrow="Guest lounge" title="Room to spread out">
+        <p>
+          The guest lounge has comfortable sofas for winding down after a day at the pond or a long celebration, and is
+          handy for families and wedding parties who want to gather before heading out.
+        </p>
+      </Feature>
+      <Feature image={pic('guests-on-the-balcony')} portrait eyebrow="Balcony" title="Coffee with a view">
+        <p>
+          The balcony dining table looks out over green hills and the farm, a favourite spot for breakfast, catching up
+          with family or a sundowner as the light changes over the North Coast.
+        </p>
+      </Feature>
+      <Feature image={pic('housekeeping-team')} portrait reverse eyebrow="Our team" title="Looked after, every day">
+        <p>
+          Our friendly housekeeping team prepares every room with care, so you arrive to a clean, fresh space with towels
+          folded and the bed made just so.
+        </p>
+      </Feature>
+    </div>
+  </Section>
+
+  <Section tone="forest" eyebrow="Book your stay" lines={[{t: 'Speak to'}, {t: 'Denny', i: true}]}>
+    <div class="copy text-[18px]" data-reveal>
+      <p>
+        For accommodation bookings and holiday rates, contact {denny.name} directly on
+        <a href={`tel:${denny.tel}`}>{denny.display}</a> (phone or WhatsApp) or email
+        <a href={`mailto:${site.email.accommodation}`}>{site.email.accommodation}</a>. You can also send a request online
+        with your dates and number of guests, and we will reply to confirm.
+      </p>
+    </div>
+    <div class="mt-8 flex flex-wrap gap-3" data-reveal>
+      <a href="/book/?type=accommodation" class="btn bg-white text-ink hover:bg-paper">Request online</a>
+      <a href={waLink('Hi Denny, I would like to book a room at The Duckpond Inn.', denny.wa)} class="btn btn-ghost" rel="noopener" target="_blank"
+        >WhatsApp Denny</a
+      >
+    </div>
+  </Section>
+
+  <Faq items={faqs} />
+
+  <CtaBand
+    lines={[{t: 'Stay over,'}, {t: 'relax, enjoy.', i: true}]}
+    text="Pair your stay with a celebration in one of our venues, a morning of fishing or a long lunch by the pond."
+    image={pic('ducks-on-the-pond-at-dusk')}
+  >
+    <a href="/book/?type=accommodation" class="btn btn-primary">Request a room</a>
+    <a href="/venues/" class="btn btn-ghost">Explore venues</a>
+  </CtaBand>
+</Base>

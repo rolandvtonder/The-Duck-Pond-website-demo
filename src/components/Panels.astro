@@ -1,0 +1,65 @@
+---
+import type {ImageMetadata} from 'astro';
+import {Image} from 'astro:assets';
+
+export type Panel = {
+  eyebrow: string;
+  name: [string, string];
+  image: {src: ImageMetadata; alt: string};
+  href: string;
+  specs: [string, string][];
+  tint: string;
+};
+interface Props {
+  items: Panel[];
+  label: string;
+}
+const {items, label} = Astro.props;
+---
+
+<!-- Three tall panels slide in from the right, one after another. -->
+<section class="bg-ink" aria-label={label}>
+  <div class="panels grid min-h-[620px] grid-cols-1 gap-[3px] overflow-hidden md:h-svh md:grid-cols-3">
+    {
+      items.map((p, i) => (
+        <a
+          href={p.href}
+          class="panel group relative block overflow-hidden text-white max-md:h-[80svh]"
+          style={`--d:${(0.12 + i * 0.16).toFixed(2)}s; background:${p.tint}`}
+        >
+          <Image
+            src={p.image.src}
+            alt={p.image.alt}
+            widths={[480, 800, 1200]}
+            sizes="(min-width: 768px) 34vw, 100vw"
+            loading="lazy"
+            class="absolute inset-0 h-full w-full object-cover transition-transform duration-[1600ms] ease-silk group-hover:scale-[1.05]"
+          />
+          <div class="absolute inset-0 bg-[linear-gradient(180deg,rgb(18_20_15/0.62),transparent_40%,transparent_55%,rgb(18_20_15/0.75))]" />
+          <div class="relative flex h-full flex-col justify-between p-7 md:p-9">
+            <div>
+              <p class="caps text-white/85">{p.eyebrow}</p>
+              <h3 class="display mt-3 text-[clamp(38px,3.6vw,64px)]">
+                <span class="block">{p.name[0]}</span>
+                <span class="it block">{p.name[1]}</span>
+              </h3>
+            </div>
+            <div class="panel-meta flex flex-wrap items-end justify-between gap-6">
+              <dl class="space-y-3">
+                {p.specs.map(([k, v]) => (
+                  <div>
+                    <dt class="caps text-white/75">{k}</dt>
+                    <dd class="display text-[22px]">{v}</dd>
+                  </div>
+                ))}
+              </dl>
+              <span class="caps flex min-h-[48px] items-center gap-3 border border-white/60 px-5 transition-colors duration-500 group-hover:bg-white group-hover:text-ink">
+                Explore <span aria-hidden="true">→</span>
+              </span>
+            </div>
+          </div>
+        </a>
+      ))
+    }
+  </div>
+</section>

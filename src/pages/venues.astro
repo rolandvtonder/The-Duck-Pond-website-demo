@@ -1,0 +1,194 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Section from '../components/Section.astro';
+import Feature from '../components/Feature.astro';
+import VenueTable from '../components/VenueTable.astro';
+import Faq from '../components/Faq.astro';
+import CtaBand from '../components/CtaBand.astro';
+import {contacts, hours, rand, venues, weekdaySpecial} from '../data/site';
+import {pic} from '../lib/photos';
+import {faqSchema, venuesSchema, type Faq as FaqItem} from '../lib/schema';
+
+const crumbs = [
+  {name: 'Home', href: '/'},
+  {name: 'Venues & events', href: '/venues/'},
+];
+const biggest = venues[venues.length - 1];
+
+const included = [
+  ['Seating', 'Chairs and tables for the number of guests your venue seats.'],
+  ['Private braai area', 'Every venue comes with its own braai area for your group.'],
+  ['Your own décor', 'Style it your way: balloons, draping, florals, themes.'],
+  ['Your own catering', 'Bring your caterer or your family’s best cooks.'],
+  ['Play areas', 'Indoor and outdoor play areas keep children happy.'],
+  ['Stay over', 'Book rooms at The Duckpond Inn for family and guests.'],
+];
+
+const faqs: FaqItem[] = [
+  {
+    q: 'How much does venue hire cost at The Duckpond?',
+    a: `Venue hire ranges from ${rand(venues[0].price)} for a 15-seat Small Lapa to ${rand(biggest.price)} for the 100-seat Wedding / Conference Centre. From ${weekdaySpecial.label} all venues are 50% off ${weekdaySpecial.days.toLowerCase()}, excluding public holidays.`,
+  },
+  {
+    q: 'How many guests can The Duckpond host?',
+    a: 'Our venues seat from 15 to 100 guests. The Wedding / Conference Centre is our largest venue at 100 seats, followed by the Island Stage (80), the Bar Shack (70), Sam’s Tree Lapa and the Braai Shed (50 each), the Kids Lapa (30) and two Small Lapas (15 and 20).',
+  },
+  {
+    q: 'What is included in venue hire?',
+    a: `Venue hire includes seating to the venue’s stated capacity and a private braai area. The Wedding / Conference Centre also includes the kitchen and a double braai stand. You may bring your own décor and catering.`,
+  },
+  {
+    q: 'What times can I use the venue?',
+    a: `Venue times are ${hours.map((h) => `${h.days} ${h.time}`).join(' and ')}.`,
+  },
+  {
+    q: 'Can we have our wedding ceremony and reception at The Duckpond?',
+    a: 'Yes. Couples often hold the ceremony on the lawn with an aisle and floral arch, then move to the Wedding / Conference Centre for the reception. Guests can stay over at The Duckpond Inn.',
+  },
+  {
+    q: 'Do you host children’s parties?',
+    a: 'Yes. The Kids Lapa seats 30 and is next to the indoor and outdoor play areas, so it is ideal for birthday parties. Many families also use the Small Lapas for smaller kids’ parties.',
+  },
+  {
+    q: 'Can I view a venue before booking?',
+    a: `Of course. Call or WhatsApp ${contacts[0].name} on ${contacts[0].display}, ${contacts[1].name} on ${contacts[1].display} or ${contacts[2].name} on ${contacts[2].display} to arrange a viewing.`,
+  },
+  {
+    q: 'How do I secure my date?',
+    a: 'Send a booking request online with your date, venue and number of guests. Our team will confirm availability and explain how to secure the booking.',
+  },
+];
+---
+
+<Base
+  title="Venue Hire Ballito | Weddings, Parties & Conferences at The Duckpond"
+  description="Eight venues for 15 to 100 guests between Ballito and Tongaat: lapas, Island Stage, Bar Shack and a wedding & conference centre. From R650, 50% off Mon–Thu."
+  crumbs={crumbs}
+  schema={[venuesSchema(), faqSchema(faqs)]}
+>
+  <PageHero
+    eyebrow="Venue hire · Weddings · Birthdays · Conferences · Ballito"
+    lines={[{t: 'Relax.'}, {t: 'Celebrate.', i: true}, {t: 'Create'}, {t: 'memories.', i: true}]}
+    intro="Eight venues around the duck pond for 15 to 100 guests, from intimate lapas to the Island Stage and our Wedding & Conference Centre."
+    images={[pic('wedding-reception-hall'), pic('garden-ceremony-red-carpet'), pic('lapa-deck-fairy-lights')]}
+    crumbs={crumbs}
+  >
+    <a href="/book/?type=venue" class="btn btn-primary">Request a date</a>
+    <a href="#prices" class="btn btn-ghost">Prices & capacity</a>
+  </PageHero>
+
+  <Section eyebrow="Venues at The Duckpond" lines={[{t: 'The perfect'}, {t: 'setting for', i: true}, {t: 'every occasion'}]}>
+    <div class="copy text-[18px]" data-reveal>
+      <p>
+        From birthdays to weddings, baby showers to corporate events, The Duckpond has a venue for the moment you are
+        planning. Every space sits on our scenic farm property around the duck pond, between Ballito and Tongaat on the
+        R102, with green lawns, thatched lapas and beautiful sunsets over the water.
+      </p>
+      <p>
+        Choose a cosy Small Lapa for 15 or 20 guests, the Kids Lapa for a children’s party of 30, the Braai Shed or Sam’s
+        Tree Lapa for 50, the Bar Shack for 70, the Island Stage for 80, or the Wedding &amp; Conference Centre for up to
+        100 guests. Every booking includes seating and a private braai area, and you are free to bring your own décor and
+        catering, which keeps your event personal and your budget in your hands.
+      </p>
+      <h3>Perfect for</h3>
+      <ul class="sm:columns-2">
+        <li>Weddings &amp; vow renewals</li>
+        <li>Birthdays &amp; milestone parties</li>
+        <li>Baby showers &amp; gender reveals</li>
+        <li>Bridal showers &amp; kitchen teas</li>
+        <li>Family gatherings &amp; reunions</li>
+        <li>Year-end functions</li>
+        <li>Conferences &amp; training days</li>
+        <li>Braai days &amp; heritage celebrations</li>
+      </ul>
+    </div>
+  </Section>
+
+  <Section id="prices" tone="cream" stacked eyebrow="Prices & capacity" lines={[{t: 'Eight venues,'}, {t: '15 to 100 guests', i: true}]}>
+    <VenueTable />
+  </Section>
+
+  <Section stacked eyebrow="Events we love to host" lines={[{t: 'Your day,'}, {t: 'your way', i: true}]}>
+    <div class="space-y-24 md:space-y-32">
+      <div id="weddings" class="scroll-mt-24">
+        <Feature image={pic('garden-wedding-ceremony')} eyebrow="Weddings" title="A garden wedding by the pond">
+          <p>
+            Walk down a white aisle on the lawn under a floral arch, with the trees and blue sky as your backdrop. After the
+            ceremony, the Wedding &amp; Conference Centre seats 100 guests for the reception, with a draped ceiling, string
+            lights and chandeliers, plus the kitchen and a double braai stand for your caterers.
+          </p>
+          <p>
+            Bring your own décorator and caterer to create exactly the look and menu you want, and book rooms at
+            <a href="/accommodation/">The Duckpond Inn</a> for the bridal party and family.
+          </p>
+        </Feature>
+      </div>
+      <Feature image={pic('bridal-table-floral')} portrait reverse eyebrow="Receptions" title="Tables dressed to impress">
+        <p>
+          Our halls have hosted elegant receptions with gold chairs, roses and greenery, round tables with white linen and
+          floral centrepieces, and long tables beside the pond. Your décorator has a blank canvas to work with.
+        </p>
+      </Feature>
+      <div id="parties" class="scroll-mt-24">
+        <Feature image={pic('gender-reveal-balloon-wall')} portrait eyebrow="Parties & showers" title="Birthdays, baby showers & reveals">
+          <p>
+            Balloon walls, themed backdrops, first birthdays, 50ths and gender reveals: our lapas and halls have seen them
+            all. Pick a Small Lapa for close family, the Kids Lapa for a children’s party, or the Bar Shack for a bigger
+            celebration with friends.
+          </p>
+          <p>
+            Children’s parties are especially easy. The <a href="/kids-play/">indoor and outdoor play areas</a> are right
+            there, so kids can play close by while adults relax.
+          </p>
+        </Feature>
+      </div>
+      <div id="conferences" class="scroll-mt-24">
+        <Feature image={pic('conference-centre-function-tables')} reverse eyebrow="Conferences & corporate" title="Meetings in the countryside">
+          <p>
+            Host conferences, workshops, strategy days, team-building and year-end functions in the Wedding &amp;
+            Conference Centre for up to 100 delegates. A change of scenery from the office, with the pond and lawns for
+            breaks and a braai to end the day.
+          </p>
+          <p>
+            Weekday bookings are especially good value: from {weekdaySpecial.label}, venue hire is 50% off
+            {' '}{weekdaySpecial.days.toLowerCase()}.
+          </p>
+        </Feature>
+      </div>
+      <Feature image={pic('sunset-over-the-duck-pond')} eyebrow="Evenings on the water" title="Island Stage & lapas">
+        <p>
+          As the sun sets, the pond turns pink and gold and the lapas light up with fairy lights. The Island Stage seats 80
+          and is a memorable spot for performances, speeches, parties and celebrations right on the water.
+        </p>
+      </Feature>
+    </div>
+  </Section>
+
+  <Section tone="ink" stacked eyebrow="What’s included" lines={[{t: 'Everything you need,'}, {t: 'nothing you don’t', i: true}]}>
+    <ul class="grid gap-x-10 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        included.map(([t, d], i) => (
+          <li class="border-t border-white/25 pt-5" data-reveal style={`--d:${(i % 3) * 0.06}s`}>
+            <h3 class="display text-[30px]">{t}</h3>
+            <p class="mt-2 text-white/75">{d}</p>
+          </li>
+        ))
+      }
+    </ul>
+    <p class="mt-12 text-white/75" data-reveal>
+      Venue times: {hours.map((h) => `${h.days} ${h.time}`).join(' · ')}.
+    </p>
+  </Section>
+
+  <Faq items={faqs} />
+
+  <CtaBand
+    lines={[{t: 'Book your'}, {t: 'celebration today', i: true}]}
+    text="Tell us your date, the venue you like and how many guests you expect. We will confirm availability, or call us to arrange a viewing."
+    image={pic('reception-hall-draping-lights')}
+  >
+    <a href="/book/?type=venue" class="btn btn-primary">Request a venue</a>
+    <a href={`tel:${contacts[0].tel}`} class="btn btn-ghost">Call {contacts[0].display}</a>
+  </CtaBand>
+</Base>

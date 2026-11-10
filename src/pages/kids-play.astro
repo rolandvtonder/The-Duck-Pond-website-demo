@@ -1,0 +1,120 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Section from '../components/Section.astro';
+import Feature from '../components/Feature.astro';
+import Faq from '../components/Faq.astro';
+import CtaBand from '../components/CtaBand.astro';
+import {rand, venues, weekdaySpecial} from '../data/site';
+import {pic} from '../lib/photos';
+import {faqSchema, type Faq as FaqItem} from '../lib/schema';
+
+const crumbs = [
+  {name: 'Home', href: '/'},
+  {name: 'Kids play', href: '/kids-play/'},
+];
+const kidsLapa = venues.find((v) => v.id === 'kids-lapa')!;
+
+const faqs: FaqItem[] = [
+  {
+    q: 'What play areas are there for children?',
+    a: 'There is a covered indoor play area with slides, swings, a wooden jungle gym and child-sized tables and chairs, plus outdoor jungle gyms with slides on a wide green lawn.',
+  },
+  {
+    q: 'Can I host a children’s party at The Duckpond?',
+    a: `Yes. The Kids Lapa seats ${kidsLapa.seats} and is made for children’s parties. It costs ${rand(kidsLapa.price)}, or ${rand(kidsLapa.weekday)} ${weekdaySpecial.days.toLowerCase()} during the weekday special (${weekdaySpecial.label}).`,
+  },
+  {
+    q: 'Is the indoor play area useful when it rains?',
+    a: 'Yes. The indoor play area is under a roof, so children can keep playing in summer showers and on hot afternoons out of the sun.',
+  },
+  {
+    q: 'Do children need to be supervised?',
+    a: 'Please keep an eye on your children at all times, especially near the pond. Parents can relax in the lapas and seating areas close to the play areas.',
+  },
+  {
+    q: 'Can we bring our own party décor and food?',
+    a: 'Yes. Venue hire includes seating and a private braai area, and you are welcome to bring your own décor, cake and catering.',
+  },
+];
+---
+
+<Base
+  title="Kids Play Area & Kids Party Venue Ballito | The Duckpond"
+  description="Indoor and outdoor play areas and a 30-seat Kids Lapa for children's parties at The Duckpond, between Ballito and Tongaat. A family day out on the KZN North Coast."
+  crumbs={crumbs}
+  schema={[faqSchema(faqs)]}
+>
+  <PageHero
+    eyebrow="Kids play areas · Children’s parties · Ballito & Tongaat"
+    lines={[{t: 'Let them'}, {t: 'run, climb', i: true}, {t: '& play'}]}
+    intro="Covered indoor play, outdoor jungle gyms on the lawn and a Kids Lapa for parties. Little ones play while the grown-ups unwind by the pond."
+    images={[pic('indoor-play-area-wide')]}
+    crumbs={crumbs}
+  >
+    <a href={`/book/?type=venue&venue=${kidsLapa.id}`} class="btn btn-primary">Book a kids party</a>
+    <a href="#play-areas" class="btn btn-ghost">See the play areas</a>
+  </PageHero>
+
+  <Section eyebrow="A family day out" lines={[{t: 'Where families'}, {t: 'flock together', i: true}]}>
+    <div class="copy text-[18px]" data-reveal>
+      <p>
+        The Duckpond was made for families. Between the ducks on the pond, the slides and swings and the wide green lawns,
+        children always find something to do, which means parents get a chance to sit back, have a meal and enjoy the
+        view.
+      </p>
+      <p>
+        Our play areas sit close to the lapas and venues, so a birthday party, a family braai or a Sunday lunch can all
+        include playtime. And when it is time for a party of their own, the Kids Lapa is ready.
+      </p>
+    </div>
+  </Section>
+
+  <Section id="play-areas" tone="cream" stacked eyebrow="Play areas" lines={[{t: 'Indoor'}, {t: '& outdoor', i: true}]}>
+    <div class="space-y-24 md:space-y-32">
+      <Feature image={pic('indoor-play-area')} eyebrow="Indoor play area" title="Rain or shine">
+        <p>
+          Our covered indoor play area has a colourful wooden jungle gym, a big green slide, swings and child-sized tables
+          and chairs for snacks and colouring in. Being under a roof, it keeps going through summer showers and the
+          midday sun.
+        </p>
+      </Feature>
+      <Feature image={pic('outdoor-jungle-gym')} portrait reverse eyebrow="Outdoor play" title="Room to run">
+        <p>
+          Outside, wooden jungle gyms with slides stand on a wide, open lawn under the KZN sky. There is space to run, roll
+          and play ball, with the countryside stretching away around you.
+        </p>
+      </Feature>
+    </div>
+  </Section>
+
+  <Section eyebrow="Children’s parties" lines={[{t: 'The'}, {t: 'Kids Lapa', i: true}]}>
+    <div class="copy text-[18px]" data-reveal>
+      <p>
+        The Kids Lapa seats {kidsLapa.seats} and is made for children’s birthday parties, right next to the play areas.
+        Hire includes seating and a private braai area, and you are welcome to bring your own décor, cake and catering.
+      </p>
+      <p>
+        Standard price: <strong>{rand(kidsLapa.price)}</strong>. Weekday special ({weekdaySpecial.days}, {weekdaySpecial.label}):
+        <strong class="text-raspberry-deep">{rand(kidsLapa.weekday)}</strong>, excluding public holidays.
+      </p>
+      <p>
+        Bigger party? See all <a href="/venues/#prices">venue prices and capacities</a>, from 15 to 100 guests.
+      </p>
+    </div>
+    <div class="mt-8" data-reveal>
+      <a href={`/book/?type=venue&venue=${kidsLapa.id}`} class="btn btn-forest">Request the Kids Lapa</a>
+    </div>
+  </Section>
+
+  <Faq items={faqs} />
+
+  <CtaBand
+    lines={[{t: 'Happy kids,'}, {t: 'happy parents.', i: true}]}
+    text="Plan a birthday they will talk about all year, or simply bring the family for a day of fresh air by the pond."
+    image={pic('first-birthday-balloon-decor')}
+  >
+    <a href={`/book/?type=venue&venue=${kidsLapa.id}`} class="btn btn-primary">Book a kids party</a>
+    <a href="/fishing/" class="btn btn-ghost">Try fishing too</a>
+  </CtaBand>
+</Base>

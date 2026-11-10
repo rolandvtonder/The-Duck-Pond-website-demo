@@ -1,0 +1,49 @@
+---
+import {rand, venues, weekdaySpecial} from '../data/site';
+interface Props {
+  /** Show the 50% Monday–Thursday column. */
+  special?: boolean;
+  caption?: string;
+}
+const {special = true, caption = 'Venue hire prices and seating capacity at The Duckpond'} = Astro.props;
+---
+
+<div class="overflow-x-auto" data-reveal>
+  <table class="w-full min-w-[560px] border-collapse text-left">
+    <caption class="caps mb-4 text-left text-ink/70">{caption}</caption>
+    <thead>
+      <tr class="caps border-b border-ink text-ink/80">
+        <th scope="col" class="py-3 pr-4 font-normal">Venue</th>
+        <th scope="col" class="py-3 pr-4 text-right font-normal">Seats</th>
+        <th scope="col" class="py-3 pr-4 text-right font-normal">Standard price</th>
+        {special && <th scope="col" class="py-3 pr-4 text-right font-normal text-raspberry-deep">Mon–Thu special</th>}
+        <th scope="col" class="py-3 font-normal"><span class="sr-only">Book</span></th>
+      </tr>
+    </thead>
+    <tbody class="tabular-nums">
+      {
+        venues.map((v) => (
+          <tr class="border-b border-ink/15">
+            <th scope="row" class="py-4 pr-4 font-normal">
+              <span class="display block text-[24px]">{v.name}</span>
+              {v.note && <span class="block text-[15px] text-ink/70">{v.note}</span>}
+            </th>
+            <td class="py-4 pr-4 text-right">{v.seats}</td>
+            <td class:list={['py-4 pr-4 text-right whitespace-nowrap', special && 'text-ink/60 line-through decoration-ink/40']}>{rand(v.price)}</td>
+            {special && <td class="py-4 pr-4 text-right whitespace-nowrap text-[19px] font-bold text-raspberry-deep">{rand(v.weekday)}</td>}
+            <td class="py-4 text-right">
+              <a href={`/book/?type=venue&venue=${v.id}`} class="caps inline-flex min-h-[44px] items-center whitespace-nowrap text-forest hover:text-raspberry">
+                Request <span class="sr-only">&nbsp;{v.name} for {v.seats}</span>&nbsp;→
+              </a>
+            </td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+  <p class="mt-4 text-[15px] text-ink/70">
+    Venue hire includes seating to the stated capacity and a private braai area. You are welcome to bring your own décor and
+    catering.
+    {special && <> The 50% special applies {weekdaySpecial.days.toLowerCase()}, {weekdaySpecial.label}. {weekdaySpecial.terms}</>}
+  </p>
+</div>

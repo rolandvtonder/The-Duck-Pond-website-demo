@@ -1,0 +1,82 @@
+---
+import {Image} from 'astro:assets';
+import logoFull from '../assets/brand/logo-full.png';
+import {contacts, hours, nav, site} from '../data/site';
+const year = 2026;
+const explore = nav.filter((n) => !['/', '/book/', '/contact/', '/about/'].includes(n.href));
+---
+
+<footer class="on-dark bg-ink pt-20 pb-28 text-white md:pb-12">
+  <div class="mx-auto max-w-[1680px] px-5 md:px-14">
+    <div class="grid gap-12 md:grid-cols-12">
+      <div class="md:col-span-4">
+        <Image src={logoFull} alt="The Duckpond logo: where families flock together" width={220} height={196} class="w-[180px]" />
+        <p class="mt-6 max-w-[36ch] text-white/75">
+          A family venue, guest inn and restaurant around a scenic duck pond on the R102, between Ballito and Tongaat on
+          the KwaZulu-Natal North Coast.
+        </p>
+      </div>
+
+      <div class="md:col-span-3">
+        <h2 class="caps text-white/60">Visit us</h2>
+        <address class="mt-3 not-italic">
+          The Duckpond<br />R102, Greylands Road<br />Between Ballito &amp; Tongaat<br />KwaZulu-Natal, South Africa
+        </address>
+        <a
+          class="caps mt-4 inline-block border-b border-white/40 pb-0.5 hover:border-sage hover:text-sage"
+          href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(site.mapQuery)}`}
+          rel="noopener"
+          target="_blank">Get directions</a
+        >
+        <h2 class="caps mt-8 text-white/60">Venue hours</h2>
+        <ul class="mt-2 space-y-1">
+          {hours.map((h) => <li>{h.days}: <span class="whitespace-nowrap">{h.time}</span></li>)}
+        </ul>
+      </div>
+
+      <div class="md:col-span-3">
+        <h2 class="caps text-white/60">Call or WhatsApp</h2>
+        <ul class="mt-3 space-y-2">
+          {
+            contacts.map((c) => (
+              <li>
+                <a href={`tel:${c.tel}`} class="hover:text-sage">
+                  {c.name}: <span class="whitespace-nowrap">{c.display}</span>
+                </a>
+                <span class="block text-sm text-white/60">{c.role}</span>
+              </li>
+            ))
+          }
+        </ul>
+        <h2 class="caps mt-8 text-white/60">Email</h2>
+        <ul class="mt-2 space-y-1">
+          <li><a href={`mailto:${site.email.bookings}`} class="break-all hover:text-sage">{site.email.bookings}</a></li>
+          <li><a href={`mailto:${site.email.accommodation}`} class="break-all hover:text-sage">{site.email.accommodation}</a></li>
+        </ul>
+      </div>
+
+      <nav class="md:col-span-2" aria-label="Footer">
+        <h2 class="caps text-white/60">Explore</h2>
+        <ul class="mt-3 space-y-1.5">
+          {explore.map((n) => <li><a href={n.href} class="hover:text-sage">{n.label}</a></li>)}
+          <li><a href="/about/" class="hover:text-sage">About us</a></li>
+          <li><a href="/contact/" class="hover:text-sage">Contact</a></li>
+          <li><a href="/book/" class="hover:text-sage">Book now</a></li>
+        </ul>
+      </nav>
+    </div>
+
+    <p class="mt-20 overflow-hidden" aria-hidden="true">
+      <span data-fit class="display inline-block whitespace-nowrap leading-[0.8] text-white/90">The Duckpond</span>
+    </p>
+
+    <div class="mt-8 flex flex-col gap-4 border-t border-white/15 pt-6 text-white/60 md:flex-row md:items-center md:justify-between">
+      <p class="caps">© {year} The Duckpond · {site.tagline}</p>
+      <div class="flex gap-6">
+        <a href={site.social.facebook} class="caps hover:text-white" rel="noopener" target="_blank">Facebook</a>
+        <a href={site.social.instagram} class="caps hover:text-white" rel="noopener" target="_blank">Instagram</a>
+        <a href={`https://wa.me/${site.phone.whatsapp}`} class="caps hover:text-white" rel="noopener" target="_blank">WhatsApp</a>
+      </div>
+    </div>
+  </div>
+</footer>
