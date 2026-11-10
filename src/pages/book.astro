@@ -567,6 +567,10 @@ const faqs: FaqItem[] = [
   const waHref = () => `https://wa.me/${P.whatsapp}?text=${encodeURIComponent(message())}`;
   const mailHref = () => `mailto:${P.email}?subject=${encodeURIComponent('Booking request: ' + val('name'))}&body=${encodeURIComponent(message())}`;
 
+  // Online sending needs Netlify; the dev server and the GitHub Pages demo go
+  // straight to the pre-filled WhatsApp / email step instead.
+  const online = !import.meta.env.DEV && import.meta.env.PUBLIC_DEMO !== 'true';
+
   function done(sent: boolean) {
     const wrap = document.querySelector<HTMLElement>('[data-form-wrap]')!;
     const box = document.querySelector<HTMLElement>('[data-done]')!;
@@ -576,10 +580,11 @@ const faqs: FaqItem[] = [
     document.querySelector<HTMLAnchorElement>('[data-done-mail]')!.href = mailHref();
     document.querySelector<HTMLElement>('[data-done-name]')!.textContent = sent ? `${first}.` : 'almost there';
     if (!sent) {
-      document.querySelector<HTMLElement>('[data-done-eyebrow]')!.textContent = 'Not sent yet';
+      document.querySelector<HTMLElement>('[data-done-eyebrow]')!.textContent = online ? 'Not sent yet' : 'Almost done';
       document.querySelector<HTMLElement>('[data-done-title] span')!.textContent = 'One more step,';
-      document.querySelector<HTMLElement>('[data-done-text]')!.textContent =
-        'We could not send your request online just now. Please send it to us on WhatsApp or by email using the buttons below. Your details are already filled in.';
+      document.querySelector<HTMLElement>('[data-done-text]')!.textContent = online
+        ? 'We could not send your request online just now. Please send it to us on WhatsApp or by email using the buttons below. Your details are already filled in.'
+        : 'Send your request to our team on WhatsApp or by email using the buttons below. Your details are already filled in.';
     }
     wrap.hidden = true;
     box.hidden = false;
@@ -597,8 +602,7 @@ const faqs: FaqItem[] = [
     if (errors.length) return showSummary(errors);
     summaryBox.hidden = true;
     (form.elements.namedItem('estimate') as HTMLInputElement).value = estimateText;
-    // Forms are received by Netlify; the local dev server would just echo "OK".
-    if (import.meta.env.DEV) return done(false);
+    if (!online) return done(false);
     submitBtn.disabled = true;
     submitLabel.textContent = 'Sending…';
     try {

@@ -20,6 +20,15 @@ npm run check    # type check
 - `src/lib/schema.ts`: Google structured data (business, rooms, venues, FAQs).
 - `media/`: the original photos and logo, untouched. Not used by the site directly.
 
+## Client demo on GitHub Pages
+
+Every push to `main` builds the demo and publishes it to
+https://rolandvtonder.github.io/The-Duck-Pond-website-demo/ (see `.github/workflows/deploy.yml`).
+One-time setup: repo **Settings → Pages → Source: GitHub Actions**.
+
+The demo is hidden from Google (noindex), and because GitHub Pages can't receive forms, its booking
+form hands the filled-in request to WhatsApp or email instead.
+
 ## Go live on Netlify (free)
 
 1. Put this folder on GitHub, then in Netlify choose **Add new site → Import an existing project** (it reads `netlify.toml`).

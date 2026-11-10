@@ -1,6 +1,8 @@
 ---
 import {contacts, nav, site} from '../data/site';
-const path = Astro.url.pathname;
+// Strip the GitHub Pages prefix so the current page is still highlighted.
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const path = Astro.url.pathname.slice(base.length) || '/';
 ---
 
 <!-- Three slabs wipe in from the right one after another (ink, sage, paper);

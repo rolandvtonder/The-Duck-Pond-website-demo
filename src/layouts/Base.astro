@@ -19,9 +19,12 @@ interface Props {
   noindex?: boolean;
 }
 
-const {title, description, image = '/og-image.jpg', crumbs, schema = [], noindex = false} = Astro.props;
+const {title, description, image = '/og-image.jpg', crumbs, schema = [], noindex: noindexPage = false} = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+// The GitHub Pages demo is kept out of Google so it never competes with the real domain.
+const noindex = noindexPage || import.meta.env.PUBLIC_DEMO === 'true';
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
-const ogImage = new URL(image, Astro.site).href;
+const ogImage = new URL(base + image, Astro.site).href;
 const jsonld = [businessSchema(), ...(crumbs ? [breadcrumbSchema(crumbs)] : []), ...schema];
 ---
 
